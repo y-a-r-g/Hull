@@ -1,0 +1,10 @@
+Collections/**/*.meta
+Extensions/**/*.meta
+GameClient/**/*.meta
+GameServer/**/*.meta
+Types/**/*.meta
+Collections.meta
+Extensions.meta
+GameClient.meta
+GameServer.meta
+Types.meta
