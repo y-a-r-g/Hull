@@ -25,7 +25,10 @@ namespace Hull.GameServer {
 
         public GameProcessor(State initialState, IServerRuntime runtime) {
             if (initialState == null) {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("initialState");
+            }
+            if (runtime == null) {
+                throw new ArgumentNullException("runtime");
             }
 
             initialState.ForceModify();
@@ -76,6 +79,9 @@ namespace Hull.GameServer {
             foreach (var updater in _updaters) {
                 updater.Update(_state, _runtime, dt);
             }
+            
+            _runtime.UpdateCoroutines();
+            
             _state.EndUpdate();
 
             SendStateChange();
