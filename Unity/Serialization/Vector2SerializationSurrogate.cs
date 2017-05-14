@@ -2,7 +2,7 @@
 using UnityEngine;
 using Object = System.Object;
 
-namespace Hull.Serialization {
+namespace Hull.Unity.Serialization {
     public sealed class Vector2SerializationSurrogate : ISerializationSurrogate {
         public void GetObjectData(Object obj, SerializationInfo info, StreamingContext context) {
             var vector = (Vector2)obj;

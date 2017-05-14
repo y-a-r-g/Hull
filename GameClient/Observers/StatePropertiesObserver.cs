@@ -10,17 +10,17 @@ namespace Hull.GameClient.Observers {
         private readonly ObserveMode _mode;
         private readonly Type _partType;
         private readonly FieldInfo[] _fields;
-        
+
         public delegate void ObservedStatePropertiesChangedDelegate(TStatePart statePart, State state);
 
         public event ObservedStatePropertiesChangedDelegate ObservedStatePropertiesChanged;
-        
+
         public StatePropertiesObserver(string[] propertyNames, ObserveMode mode = ObserveMode.Any) {
             _mode = mode;
             _partType = typeof(TStatePart);
             _fields = propertyNames.Map(pn => _partType.GetField(pn));
         }
-        
+
         public void OnStateChange(State state) {
             if (ObservedStatePropertiesChanged != null) {
                 var part = (TStatePart)state.GetPart(_partType);

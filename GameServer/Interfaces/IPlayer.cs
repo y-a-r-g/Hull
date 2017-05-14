@@ -1,5 +1,3 @@
 ﻿namespace Hull.GameServer.Interfaces {
-    public interface IPlayer {
-        
-    }
+    public interface IPlayer { }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Hull.Pooling {
+namespace Hull.Unity.Pooling {
     public static class Pool {
         private static readonly Dictionary<GameObject, LinkedList<GameObject>> Pools =
             new Dictionary<GameObject, LinkedList<GameObject>>();
@@ -14,7 +14,7 @@ namespace Hull.Pooling {
             if (prefab == null) {
                 throw new ArgumentNullException();
             }
-            
+
             var pool = GetPool(prefab);
             GameObject instance;
 
@@ -43,7 +43,7 @@ namespace Hull.Pooling {
             if (!gameObject) {
                 throw new ArgumentNullException();
             }
-            
+
             gameObject.SetActive(false);
 
             var poolManaged = gameObject.GetComponent<PoolManaged>();
@@ -56,7 +56,7 @@ namespace Hull.Pooling {
                 if (!_poolTransform) {
                     _poolTransform = new GameObject("Hull.Pool").transform;
                 }
-                
+
                 gameObject.transform.SetParent(_poolTransform, false);
             }
             else {
@@ -68,7 +68,7 @@ namespace Hull.Pooling {
             if (!component) {
                 throw new ArgumentNullException();
             }
-            
+
             Destroy(component.gameObject);
         }
 

@@ -18,6 +18,15 @@ namespace Hull.GameServer.ServerState.Properties {
             _list = new ImmutableList<TValue>(items, doNotCopy);
         }
 
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            base.GetObjectData(info, context);
+            info.AddValue("_list", _list, typeof(ImmutableList<TValue>));
+        }
+
+        protected ImmutableListStateProperty(SerializationInfo info, StreamingContext context) {
+            _list = (ImmutableList<TValue>)info.GetValue("_list", typeof(ImmutableList<TValue>));
+        }
+
         public IEnumerator<TValue> GetEnumerator() {
             return _list.GetEnumerator();
         }
@@ -32,15 +41,6 @@ namespace Hull.GameServer.ServerState.Properties {
 
         public void Set(ImmutableList<TValue> value) {
             _list = value;
-        }
-
-        public ImmutableListStateProperty(SerializationInfo info, StreamingContext context) {
-            _list = (ImmutableList<TValue>)info.GetValue("_list", typeof(ImmutableList<TValue>));
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_list", _list, typeof(ImmutableList<TValue>));
         }
     }
 }

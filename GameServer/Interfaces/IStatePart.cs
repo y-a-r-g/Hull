@@ -1,5 +1,3 @@
 ﻿namespace Hull.GameServer.Interfaces {
-    public interface IStatePart : IStatePropertyContainer {
-        
-    }
+    public interface IStatePart : IStatePropertyContainer { }
 }

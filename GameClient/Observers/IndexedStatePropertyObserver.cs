@@ -31,9 +31,11 @@ namespace Hull.GameClient.Observers {
                     var property = _fieldInfo.GetValue(part);
                     if (((IStateProperty)property).IsModified) {
                         var indexed = (IIndexedAccess<TValue, TIndex>)property;
-                        var value = indexed[_index];
-                        if (value.IsModified) {
-                            ObservedIndexedStatePropertyChanged(value, indexed, state);
+                        TValue value;
+                        if (indexed.TryGetValue(_index, out value)) {
+                            if (value.IsModified) {
+                                ObservedIndexedStatePropertyChanged(value, indexed, state);
+                            }
                         }
                     }
                 }

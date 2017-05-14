@@ -4,6 +4,7 @@ using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
 #if UNITY_5
 using UnityEngine;
+
 #endif
 
 namespace Hull.GameServer {
@@ -17,7 +18,7 @@ namespace Hull.GameServer {
         private readonly List<IUpdater> _updaters = new List<IUpdater>();
 
         public event Action<State> StateChanged;
-        
+
 #if !UNITY_5
         private const float dt = 1f / 30;
 #endif
@@ -27,6 +28,7 @@ namespace Hull.GameServer {
                 throw new ArgumentNullException();
             }
 
+            initialState.ForceModify();
             initialState.EndUpdate();
             _state = initialState;
             _runtime = runtime;
@@ -54,9 +56,7 @@ namespace Hull.GameServer {
         }
 
         private void Start() {
-            if (StateChanged != null) {
-                StateChanged(_state);
-            }
+            SendStateChange();
         }
 
         private void FixedUpdate() {
@@ -78,11 +78,7 @@ namespace Hull.GameServer {
             }
             _state.EndUpdate();
 
-            if (_state.IsModified) {
-                if (StateChanged != null) {
-                    StateChanged(_state);
-                }
-            }
+            SendStateChange();
         }
 
         public void RegisterProcessor<TRequest>(IRequestProcessor processor) where TRequest : IRequest {
@@ -104,6 +100,14 @@ namespace Hull.GameServer {
                 throw new ArgumentNullException();
             }
             _updaters.Add(updater);
+        }
+
+        private void SendStateChange() {
+            if (_state.IsModified) {
+                if (StateChanged != null) {
+                    StateChanged(_state);
+                }
+            }
         }
     }
 }

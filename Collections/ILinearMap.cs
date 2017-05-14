@@ -9,7 +9,6 @@ namespace Hull.Collections {
         LinearMapId Add(T item);
         void Remove(LinearMapId id);
         bool Contains(LinearMapId id);
-        bool TryGetValue(LinearMapId id, out T value);
         T this[LinearMapId id] { get; set; }
     }
 }

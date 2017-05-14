@@ -2,7 +2,7 @@
 using Hull.Extensions;
 using UnityEngine;
 
-namespace Hull.Batching {
+namespace Hull.Unity.Batching {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
     internal class CombinedMesh : MonoBehaviour {

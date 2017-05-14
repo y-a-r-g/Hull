@@ -3,46 +3,57 @@ using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
+    [Serializable]
     public abstract class AbstractStateProperty : IStateProperty {
-        public virtual State State {
-            protected get { return _state; }
-            set {
-                _state = value;
-                _updateId = value.UpdateId;
-            }
-        }
-
-        public IStatePropertyContainer Container { protected get; set; }
-
-        private ulong _updateId;
         private State _state;
+        protected ulong UpdateId;
 
-        public bool IsModified {
-            get { return _updateId == State.UpdateId; }
-        }
+        protected AbstractStateProperty() { }
 
-        public AbstractStateProperty() { }
-
-        protected void Modify() {
-            if (State != null) {
-                if (State.IsReadonly) {
-                    throw new AccessViolationException();
-                }
-
-                _updateId = State.UpdateId;
-                if (Container != null) {
-                    Container.Modify();
-                }
-                State.Modify();
-            }
-        }
-
-        public AbstractStateProperty(SerializationInfo info, StreamingContext context) {
-            _updateId = (ulong)info.GetValue("_updateId", typeof(ulong));
+        protected AbstractStateProperty(SerializationInfo info, StreamingContext context) {
+            UpdateId = (ulong)info.GetValue("_updateId", typeof(ulong));
         }
 
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
-            info.AddValue("_updateId", _updateId, typeof(ulong));
+            info.AddValue("_updateId", UpdateId, typeof(ulong));
+        }
+
+        protected virtual State CurrentState {
+            get {
+                if (_state == null) {
+                    IStateProperty prop = this;
+                    while (prop.Container != null) {
+                        prop = prop.Container;
+                    }
+                    if (prop != this) {
+                        _state = (State)prop;
+                    }
+                }
+                return _state;
+            }
+        }
+
+        public virtual IStatePropertyContainer Container { get; set; }
+
+        public virtual bool IsModified {
+            get { return (CurrentState != null) && UpdateId == CurrentState.UpdateId; }
+        }
+
+        public virtual void ForceModify() {
+            Modify();
+        }
+
+        protected void Modify() {
+            if (CurrentState != null) {
+                if (CurrentState.IsReadonly) {
+                    throw new AccessViolationException();
+                }
+
+                UpdateId = CurrentState.UpdateId;
+                if (Container != null) {
+                    Container.Modify();
+                }
+            }
         }
     }
 }

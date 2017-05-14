@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hull.Rendering {
+namespace Hull.Unity.Rendering {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
     public class PlanesMesh : MonoBehaviour {

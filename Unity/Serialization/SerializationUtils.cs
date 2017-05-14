@@ -3,11 +3,11 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-namespace Hull.Serialization {
+namespace Hull.Unity.Serialization {
     public static class SerializationUtils {
-        private static BinaryFormatter _formatter;
+        private static IFormatter _formatter;
 
-        public static BinaryFormatter BinaryFormatter {
+        public static IFormatter BinaryFormatter {
             get {
                 if (_formatter == null) {
                     _formatter = new BinaryFormatter();

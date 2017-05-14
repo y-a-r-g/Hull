@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 
-namespace Hull.Extensions {
+namespace Hull.Unity.Extensions {
     public static class RayExtensions {
-        public static bool IntersectsTriangle(this Ray ray, Vector3 tri0, Vector3 tri1, Vector3 tri2, out Vector3 intersection) {
+        public static bool IntersectsTriangle(
+            this Ray ray,
+            Vector3 tri0,
+            Vector3 tri1,
+            Vector3 tri2,
+            out Vector3 intersection) {
             intersection = Vector3.zero;
 
             // get triangle edge vectors and plane normal
@@ -29,7 +34,7 @@ namespace Hull.Extensions {
             if (r < 0) { // ray goes away from triangle
                 return false; //0;                   // => no intersect
             }
-            
+
             // for a segment, also test if (r > 1.0) => no intersect
             intersection = ray.origin + r * dir; // intersect point of ray and plane
 

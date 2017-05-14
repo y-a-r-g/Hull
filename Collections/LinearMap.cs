@@ -5,11 +5,11 @@ using System.Runtime.Serialization;
 
 namespace Hull.Collections {
     [Serializable]
-    public class LinearMap<T> : ILinearMap<T> , ISerializable  {
-        private readonly List<T> _items = new List<T>();
-        private readonly LinkedList<int> _free = new LinkedList<int>();
+    public class LinearMap<T> : ILinearMap<T>, ISerializable {
+        protected readonly List<T> _items = new List<T>();
+        protected readonly LinkedList<int> _free = new LinkedList<int>();
 
-        private struct Enumerator : IEnumerator<KeyValuePair<LinearMapId, T>> {
+        protected struct Enumerator : IEnumerator<KeyValuePair<LinearMapId, T>> {
             private int _index;
             private readonly LinearMap<T> _set;
 
@@ -43,6 +43,16 @@ namespace Hull.Collections {
         }
 
         public LinearMap() { }
+
+        protected LinearMap(SerializationInfo info, StreamingContext context) {
+            _items = (List<T>)info.GetValue("items", typeof(List<T>));
+            _free = (LinkedList<int>)info.GetValue("free", typeof(LinkedList<int>));
+        }
+
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
+            info.AddValue("items", _items, typeof(List<T>));
+            info.AddValue("free", _free, typeof(LinkedList<int>));
+        }
 
         public virtual IEnumerator<KeyValuePair<LinearMapId, T>> GetEnumerator() {
             return new Enumerator(this);
@@ -115,16 +125,6 @@ namespace Hull.Collections {
                 _items[id.Value] = value;
                 _free.Remove(id.Value);
             }
-        }
-
-        public LinearMap(SerializationInfo info, StreamingContext context) {
-            _items = (List<T>)info.GetValue("items", typeof(List<T>));
-            _free = (LinkedList<int>)info.GetValue("free", typeof(LinkedList<int>));
-        }
-
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
-            info.AddValue("items", _items, typeof(List<T>));
-            info.AddValue("free", _free, typeof(LinkedList<int>));
         }
     }
 }

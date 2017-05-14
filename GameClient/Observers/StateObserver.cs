@@ -54,7 +54,7 @@ namespace Hull.GameClient.Observers {
             _lastUpdateTime = Time.time;
 
             var iterator = _observers.First;
-            while(iterator != null) {
+            while (iterator != null) {
                 iterator.Value.OnStateChange(state);
                 iterator = iterator.Next;
             }

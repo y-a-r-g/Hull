@@ -6,13 +6,24 @@ using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
-    public class ArrayStateProperty<TValue> //TODO: inherit from SimpleArrayStateProperty
+    public class ArrayStateProperty<TValue>
         : AbstractStatePropertyContainer, IEnumerable<TValue>, IIndexedAccess<TValue, int>
         where TValue : IStateProperty {
         private TValue[] _value;
 
         public ArrayStateProperty(TValue[] value = null, bool doNotCopyReference = false) {
             Set(value, doNotCopyReference);
+        }
+
+        protected ArrayStateProperty(SerializationInfo info, StreamingContext context)
+            : base(info, context) {
+            _value = (TValue[])info.GetValue("_value", typeof(TValue[]));
+            BindItems(_value);
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            base.GetObjectData(info, context);
+            info.AddValue("_value", _value, typeof(TValue[]));
         }
 
         public void Set(TValue[] value, bool doNotCopyReference = false) {
@@ -37,7 +48,6 @@ namespace Hull.GameServer.ServerState.Properties {
             set {
                 Modify();
                 value.Container = this;
-                value.State = State;
                 _value[index] = value;
             }
         }
@@ -63,22 +73,25 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
-        public ArrayStateProperty(SerializationInfo info, StreamingContext context)
-            : base(info, context) {
-            _value = (TValue[])info.GetValue("_value", typeof(TValue[]));
-            BindItems(_value);
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_value", _value, typeof(TValue[]));
-        }
-
-        public override State State {
-            protected get { return base.State; }
+        public override IStatePropertyContainer Container {
+            get { return base.Container; }
             set {
-                base.State = value;
+                base.Container = value;
                 BindItems(_value);
+            }
+        }
+
+        public bool TryGetValue(int index, out TValue value) {
+            value = this[index];
+            return true;
+        }
+
+        public override void ForceModify() {
+            base.ForceModify();
+            foreach (var item in _value) {
+                if (item != null) {
+                    item.ForceModify();
+                }
             }
         }
     }

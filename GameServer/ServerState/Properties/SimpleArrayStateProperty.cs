@@ -15,6 +15,16 @@ namespace Hull.GameServer.ServerState.Properties {
             Set(value, doNotCopyReference);
         }
 
+        protected SimpleArrayStateProperty(SerializationInfo info, StreamingContext context)
+            : base(info, context) {
+            _value = (TValue[])info.GetValue("_value", typeof(TValue[]));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            base.GetObjectData(info, context);
+            info.AddValue("_value", _value, typeof(TValue[]));
+        }
+
         public void Set(TValue[] value, bool doNotCopyReference = false) {
             Modify();
             if (value == null) {
@@ -60,14 +70,9 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
-        public SimpleArrayStateProperty(SerializationInfo info, StreamingContext context)
-            : base(info, context) {
-            _value = (TValue[])info.GetValue("_value", typeof(TValue[]));
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_value", _value, typeof(TValue[]));
+        public bool TryGetValue(int index, out TValue value) {
+            value = this[index];
+            return true;
         }
     }
 }

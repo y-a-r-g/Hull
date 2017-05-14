@@ -1,14 +1,14 @@
-﻿using Hull.Pooling;
+﻿using Hull.Unity.Pooling;
 using UnityEngine;
 
-namespace Hull.Batching {
+namespace Hull.Unity.Batching {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
     [DisallowMultipleComponent]
     public class Batchable : MonoBehaviour, IPoolable {
         private static CombinedMeshManager _combinedMeshManager;
         private CombinedMesh _combinedMesh;
-        
+
         public IVertexProcessor VertexProcessor;
 
         private MeshFilter _meshFilter;
@@ -18,7 +18,7 @@ namespace Hull.Batching {
 
         internal int MeshVertexCount { get; private set; }
         internal int MeshTrianglesCount { get; private set; }
-        
+
         private void Awake() {
             _meshFilter = GetComponent<MeshFilter>();
             Debug.Assert(_meshFilter);
@@ -26,21 +26,21 @@ namespace Hull.Batching {
             _meshRenderer = GetComponent<MeshRenderer>();
             Debug.Assert(_meshRenderer);
         }
-        
+
         private void Start() {
             MeshVertexCount = Mesh.vertexCount;
             MeshTrianglesCount = Mesh.triangles.Length;
             transform.hasChanged = false;
             MeshWasUpdated();
         }
-        
+
         private void Update() {
             if (transform.hasChanged) {
                 MeshWasUpdated();
                 transform.hasChanged = false;
             }
         }
-        
+
         public void Instantiated() {
             _meshRendererWasEnabled = _meshRenderer.enabled;
             _meshRenderer.enabled = false;
@@ -71,7 +71,7 @@ namespace Hull.Batching {
                 _addedToCombinedMesh = false;
             }
         }
-        
+
         public void MeshWasUpdated() {
             var mesh = Mesh;
             if (mesh.vertexCount != MeshVertexCount) {
@@ -86,7 +86,7 @@ namespace Hull.Batching {
                 _combinedMesh.UpdateBatchable(this);
             }
         }
-        
+
         public Mesh Mesh {
             get { return _meshFilter.sharedMesh; }
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hull.Batching {
+namespace Hull.Unity.Batching {
     public interface IVertexProcessor {
         void ProcessVertices(
             GameObject observableObject,

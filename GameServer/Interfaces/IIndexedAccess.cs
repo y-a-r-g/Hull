@@ -1,5 +1,5 @@
 ﻿namespace Hull.GameServer.Interfaces {
-    public interface IIndexedAccess<out TValue, in TIndex> {
-        TValue this[TIndex index] { get; }
+    public interface IIndexedAccess<TValue, in TIndex> {
+        bool TryGetValue(TIndex index, out TValue value);
     }
 }

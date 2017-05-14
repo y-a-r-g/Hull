@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using UnityEngine;
 
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
@@ -9,6 +8,16 @@ namespace Hull.GameServer.ServerState.Properties {
 
         public StateProperty(TValue value = default(TValue)) {
             _value = value;
+        }
+
+        protected StateProperty(SerializationInfo info, StreamingContext context)
+            : base(info, context) {
+            _value = (TValue)info.GetValue("_value", typeof(TValue));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            base.GetObjectData(info, context);
+            info.AddValue("_value", _value, typeof(TValue));
         }
 
         public TValue Value {
@@ -22,16 +31,6 @@ namespace Hull.GameServer.ServerState.Properties {
         public void Set(TValue value) {
             Modify();
             _value = value;
-        }
-
-        public StateProperty(SerializationInfo info, StreamingContext context) 
-            : base(info, context) {
-            _value = (TValue)info.GetValue("_value", typeof(TValue));
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_value", _value, typeof(TValue));
         }
 
         public override string ToString() {

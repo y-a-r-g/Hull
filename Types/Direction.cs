@@ -53,7 +53,7 @@ namespace Hull.Types {
         public static Direction NextCW(Direction direction, bool fourDirections = false) {
             return FromMask(direction == 0x80 ? 0x1 : direction << (fourDirections ? 2 : 1));
         }
-        
+
         public static Direction NextCCW(Direction direction, bool fourDirections = false) {
             return FromMask(direction == 0x01 ? 0x80 : direction >> (fourDirections ? 2 : 1));
         }
@@ -72,13 +72,13 @@ namespace Hull.Types {
 
         public static readonly Direction Invalid = new Direction(0x1000, "X", Vector2I.Zero);
         public static readonly Direction None = new Direction(0, " ", Vector2I.Zero);
-        public static readonly Direction N = new Direction( 0x01, "N", new Vector2I(0, 1));
+        public static readonly Direction N = new Direction(0x01, "N", new Vector2I(0, 1));
         public static readonly Direction NE = new Direction(0x02, "NE", new Vector2I(1, 1));
-        public static readonly Direction E = new Direction( 0x04, "E", new Vector2I(1, 0));
+        public static readonly Direction E = new Direction(0x04, "E", new Vector2I(1, 0));
         public static readonly Direction SE = new Direction(0x08, "SE", new Vector2I(1, -1));
-        public static readonly Direction S = new Direction( 0x10, "S", new Vector2I(0, -1));
+        public static readonly Direction S = new Direction(0x10, "S", new Vector2I(0, -1));
         public static readonly Direction SW = new Direction(0x20, "SW", new Vector2I(-1, -1));
-        public static readonly Direction W = new Direction( 0x40, "W", new Vector2I(-1, 0));
+        public static readonly Direction W = new Direction(0x40, "W", new Vector2I(-1, 0));
         public static readonly Direction NW = new Direction(0x80, "NW", new Vector2I(-1, 1));
 
         public static readonly Direction[] All = {N, NE, E, SE, S, SW, W, NW};

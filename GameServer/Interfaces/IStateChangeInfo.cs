@@ -1,5 +1,3 @@
 ﻿namespace Hull.GameServer.Interfaces {
-    public interface IStateChangeInfo {
-        
-    }
+    public interface IStateChangeInfo { }
 }

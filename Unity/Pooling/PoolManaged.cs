@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Hull.Pooling {
+namespace Hull.Unity.Pooling {
     public class PoolManaged : MonoBehaviour {
         public GameObject Prefab;
     }

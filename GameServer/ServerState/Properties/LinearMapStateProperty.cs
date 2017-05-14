@@ -1,102 +1,86 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Hull.Collections;
 using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
-    public class LinearMapStateProperty<TValue>
-        : AbstractStatePropertyContainer, ILinearMap<TValue>, IIndexedAccess<TValue, LinearMapId>
+    public class LinearMapStateProperty<TValue> : LinearMap<TValue>, IStatePropertyContainer
         where TValue : IStateProperty {
-        private LinearMap<TValue> _map;
+        private IStatePropertyContainer _container;
+        private State _state;
+        private ulong _updateId;
 
-        public LinearMapStateProperty() {
-            _map = new LinearMap<TValue>();
-        }
+        public LinearMapStateProperty() { }
 
-        public LinearMapStateProperty(SerializationInfo info, StreamingContext context)
-            : base(info, context) {
-            _map = (LinearMap<TValue>)info.GetValue("_map", typeof(LinearMap<TValue>));
+        protected LinearMapStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) {
             BindItems();
         }
 
-        private void BindItems() {
-            for (var i = 0; i < _map.Capacity; i++) {
-                var id = new LinearMapId(i);
-                if (_map.Contains(id)) {
-                    var item = _map[id];
-                    if (item != null) {
-                        item.State = State;
-                        item.Container = this;
-                        _map[id] = item;
-                    }
+        public IStatePropertyContainer Container {
+            get { return _container; }
+            set {
+                _container = value;
+                BindItems();
+            }
+        }
+
+        public bool IsModified {
+            get { return (CurrentState != null) && _updateId == CurrentState.UpdateId; }
+        }
+
+        public void ForceModify() {
+            foreach (var item in _items) {
+                if (item != null) {
+                    item.ForceModify();
                 }
             }
         }
 
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_map", _map, typeof(LinearMap<TValue>));
-        }
+        public void Modify() {
+            if (CurrentState != null) {
+                if (CurrentState.IsReadonly) {
+                    throw new AccessViolationException();
+                }
 
-        public IEnumerator<KeyValuePair<LinearMapId, TValue>> GetEnumerator() {
-            return _map.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
-
-        public LinearMapId FreeId {
-            get { return _map.FreeId; }
-        }
-
-        public int Capacity {
-            get { return _map.Capacity; }
-        }
-
-        public LinearMapId Add(TValue item) {
-            Modify();
-            item.State = State;
-            item.Container = this;
-            return _map.Add(item);
-        }
-
-        public void Remove(LinearMapId id) {
-            Modify();
-            _map.Remove(id);
-        }
-
-        public int Count {
-            get { return _map.Count; }
-        }
-
-        public bool Contains(LinearMapId id) {
-            return _map.Contains(id);
-        }
-
-        public bool TryGetValue(LinearMapId id, out TValue value) {
-            return _map.TryGetValue(id, out value);
-        }
-
-        public TValue this[LinearMapId id] {
-            get { return _map[id]; }
-            set {
-                Modify();
-                value.State = State;
-                value.Container = this;
-                _map[id] = value;
+                _updateId = CurrentState.UpdateId;
+                if (Container != null) {
+                    Container.Modify();
+                }
             }
         }
-        
-        public override State State {
-            protected get { return base.State; }
-            set {
-                base.State = value;
-                BindItems();
+
+        private State CurrentState {
+            get {
+                if (_state == null) {
+                    IStateProperty prop = this;
+                    while (prop.Container != null) {
+                        prop = prop.Container;
+                    }
+                    if (prop != this) {
+                        _state = (State)prop;
+                    }
+                }
+                return _state;
             }
+        }
+
+        private void BindItems() {
+            for (var i = 0; i < _items.Count; i++) {
+                var item = _items[i];
+                if (item != null) {
+                    item.Container = this;
+                    _items[i] = item;
+                }
+            }
+        }
+
+        public override LinearMapId Add(TValue item) {
+            Modify();
+            if (item != null) {
+                item.Container = this;
+            }
+            return base.Add(item);
         }
     }
 }

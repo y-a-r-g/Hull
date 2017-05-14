@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hull.Batching {
+namespace Hull.Unity.Batching {
     [AddComponentMenu("")]
     internal class CombinedMeshManager : MonoBehaviour {
         private readonly Dictionary<int, CombinedMesh> _combinedMeshes = new Dictionary<int, CombinedMesh>();
