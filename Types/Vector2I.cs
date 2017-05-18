@@ -21,6 +21,18 @@ namespace Hull.Types {
             return new Vector2I(a.X - b.X, a.Y - b.Y);
         }
 
+        public static Vector2I operator *(Vector2I v, int m) {
+            return new Vector2I(v.X * m, v.Y * m);
+        }
+        
+        public static Vector2I operator *(int m, Vector2I v) {
+            return new Vector2I(v.X * m, v.Y * m);
+        }
+        
+        public static Vector2I operator /(Vector2I v, int d) {
+            return new Vector2I(v.X / d, v.Y / d);
+        }
+
         public static bool operator ==(Vector2I a, Vector2I b) {
             return (a.X == b.X) && (a.Y == b.Y);
         }
