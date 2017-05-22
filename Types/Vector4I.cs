@@ -35,6 +35,10 @@
             return this == (Vector4I)other;
         }
 
+        public override string ToString() {
+            return string.Format("{0}, {1}, {2}, {3}", X, Y, Z, W);
+        }
+
         public override int GetHashCode() {
             return base.GetHashCode();
         }
