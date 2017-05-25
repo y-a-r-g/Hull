@@ -1,7 +1,7 @@
 ﻿using Hull.Types;
 using NUnit.Framework;
 
-namespace Hull.Editor.Tests.Types {
+namespace Hull.Unity.Editor.Tests.Types {
     [TestFixture]
     public class Vector2ITest {
         [Test]

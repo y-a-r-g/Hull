@@ -32,7 +32,14 @@ namespace Hull.GameServer.ServerState.Properties {
             : base(info, context) {
             _fields = GetType().GetFields().Filter(filed => !filed.IsStatic);
             foreach (var fieldInfo in _fields) {
-                fieldInfo.SetValue(this, info.GetValue(fieldInfo.Name, fieldInfo.FieldType));
+                object value;
+                try {
+                    value = info.GetValue(fieldInfo.Name, fieldInfo.FieldType);
+                }
+                catch (SerializationException) {
+                    value = Activator.CreateInstance(fieldInfo.FieldType);
+                }
+                fieldInfo.SetValue(this, value);
             }
         }
 

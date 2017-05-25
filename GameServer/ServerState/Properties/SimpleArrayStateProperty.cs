@@ -11,7 +11,9 @@ namespace Hull.GameServer.ServerState.Properties {
         where TValue : struct {
         private TValue[] _value;
 
-        public SimpleArrayStateProperty(TValue[] value = null, bool doNotCopyReference = false) {
+        public SimpleArrayStateProperty() : this(null) { }
+
+        public SimpleArrayStateProperty(TValue[] value, bool doNotCopyReference = false) {
             Set(value, doNotCopyReference);
         }
 

@@ -10,6 +10,8 @@ namespace Hull.GameServer.ServerState.Properties {
         where TValue : struct {
         private ImmutableList<TValue> _list;
 
+        public ImmutableListStateProperty() : this(new TValue[0]) { }
+
         public ImmutableListStateProperty(params TValue[] items) {
             _list = new ImmutableList<TValue>(items, true);
         }

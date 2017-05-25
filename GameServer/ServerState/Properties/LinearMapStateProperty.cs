@@ -82,5 +82,10 @@ namespace Hull.GameServer.ServerState.Properties {
             }
             return base.Add(item);
         }
+
+        public override void Clear() {
+            Modify();
+            base.Clear();
+        }
     }
 }

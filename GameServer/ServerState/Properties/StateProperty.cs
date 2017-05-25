@@ -6,7 +6,9 @@ namespace Hull.GameServer.ServerState.Properties {
     public class StateProperty<TValue> : AbstractStateProperty {
         private TValue _value;
 
-        public StateProperty(TValue value = default(TValue)) {
+        public StateProperty() : this(default(TValue)) { }
+
+        public StateProperty(TValue value) {
             _value = value;
         }
 

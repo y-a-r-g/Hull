@@ -93,6 +93,12 @@ namespace Hull.Collections {
             get { return _items.Count; }
         }
 
+        public virtual void Clear() {
+            foreach (var kvp in this) {
+                Remove(kvp.Key);
+            }
+        }
+
         public virtual bool Contains(LinearMapId id) {
             return (id.Value >= 0) && (id.Value < _items.Count) && !_free.Contains(id.Value);
         }

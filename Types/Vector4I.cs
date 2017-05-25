@@ -1,4 +1,6 @@
-﻿namespace Hull.Types {
+﻿using System;
+
+namespace Hull.Types {
     public struct Vector4I {
         public int X;
         public int Y;
@@ -26,6 +28,22 @@
 
         public static bool operator !=(Vector4I a, Vector4I b) {
             return !(a == b);
+        }
+
+        public int this[int index] {
+            get {
+                switch (index) {
+                case 0:
+                    return X;
+                case 1:
+                    return Y;
+                case 2:
+                    return Z;
+                case 3:
+                    return W;
+                }
+                throw new ArgumentOutOfRangeException("index", "Should be in [0..3]");
+            }
         }
 
         public override bool Equals(object other) {
