@@ -48,12 +48,12 @@ namespace Hull.Types {
             return this == (Vector2I)other;
         }
 
-        public override int GetHashCode() {
-            return base.GetHashCode();
+        public override string ToString() {
+            return string.Format("{0}, {1}", X, Y);
         }
 
-        public override string ToString() {
-            return string.Format("({0}, {1})", X, Y);
+        public override int GetHashCode() {
+            return base.GetHashCode();
         }
     }
 }
