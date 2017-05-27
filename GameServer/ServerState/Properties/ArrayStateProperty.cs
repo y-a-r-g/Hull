@@ -5,22 +5,42 @@ using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
+    /// <summary>
+    /// This property holds an array of nested properties. Nested properties can be observed as well.
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
     [Serializable]
-    public class ArrayStateProperty<TValue>
-        : AbstractStatePropertyContainer, IEnumerable<TValue>, IIndexedAccess<TValue, int>
+    public class ArrayStateProperty<TValue> : AbstractStatePropertyContainer, IEnumerable<TValue>
         where TValue : IStateProperty {
         private TValue[] _value;
 
+        /// <summary>
+        /// Creates an empty array property
+        /// </summary>
         public ArrayStateProperty() : this(null) { }
 
+        /// <summary>
+        /// Create and array property with given items.
+        /// </summary>
+        /// <param name="value">Initial items</param>
+        /// <param name="doNotCopyReference">New array will be created and items will be coped to it until this parameter is <value>true</value></param>
         public ArrayStateProperty(TValue[] value, bool doNotCopyReference = false) {
             Set(value, doNotCopyReference);
         }
 
-        protected ArrayStateProperty(SerializationInfo info, StreamingContext context)
-            : base(info, context) {
+        protected ArrayStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) {
             _value = (TValue[])info.GetValue("_value", typeof(TValue[]));
             BindItems(_value);
+        }
+
+        protected void BindItems<TItem>(TItem[] items) where TItem : IStateProperty {
+            for (var i = 0; i < items.Length; i++) {
+                var item = items[i];
+                if (item != null) {
+                    item.Container = this;
+                    items[i] = item;
+                }
+            }
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context) {
@@ -28,8 +48,22 @@ namespace Hull.GameServer.ServerState.Properties {
             info.AddValue("_value", _value, typeof(TValue[]));
         }
 
+        /// <summary>
+        /// Replaces all items with given ones.
+        /// </summary>
+        /// <param name="value">New items</param>
+        /// <param name="doNotCopyReference">New array will be created and items will be coped to it until this parameter is <value>true</value></param>
         public void Set(TValue[] value, bool doNotCopyReference = false) {
-            Modify();
+            if (_value != null) {
+                for (var i = 0; i < _value.Length; i++) {
+                    var item = _value[i];
+                    if (item != null) {
+                        item.Container = null;
+                    }
+                }
+            }
+
+            Modify(ModificationType.Changed);
             if (value == null) {
                 value = new TValue[0];
             }
@@ -45,21 +79,31 @@ namespace Hull.GameServer.ServerState.Properties {
             BindItems(_value);
         }
 
+        /// <summary>
+        /// Indexed access to the items
+        /// </summary>
+        /// <param name="index"></param>
         public TValue this[int index] {
             get { return _value[index]; }
             set {
-                Modify();
+                Modify(ModificationType.Changed);
+                if (_value[index] != null) {
+                    _value[index].Container = null;
+                }
                 value.Container = this;
                 _value[index] = value;
             }
         }
 
+        /// <summary>
+        /// Returns amount of items that stored in array
+        /// </summary>
         public int Count {
             get { return _value.Length; }
         }
 
         public void Resize(int size) {
-            Modify();
+            Modify(ModificationType.Changed);
             if (size != _value.Length) {
                 var newArray = new TValue[size];
                 Array.Copy(_value, newArray, size < _value.Length ? size : _value.Length);
@@ -75,24 +119,12 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
-        public override IStatePropertyContainer Container {
-            get { return base.Container; }
-            set {
-                base.Container = value;
-                BindItems(_value);
-            }
-        }
-
-        public bool TryGetValue(int index, out TValue value) {
-            value = this[index];
-            return true;
-        }
-
-        public override void ForceModify() {
-            base.ForceModify();
-            foreach (var item in _value) {
-                if (item != null) {
-                    item.ForceModify();
+        protected override void ModifyChildren(ModificationType modificationType) {
+            if (_value != null) {
+                for (var i = 0; i < _value.Length; i++) {
+                    var item = _value[i];
+                    ModifyChild(item, modificationType);
+                    _value[i] = item;
                 }
             }
         }

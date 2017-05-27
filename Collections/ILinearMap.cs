@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Hull.GameServer.Interfaces;
 
 namespace Hull.Collections {
-    public interface ILinearMap<T> : IEnumerable<KeyValuePair<LinearMapId, T>>, IIndexedAccess<T, LinearMapId> {
+    public interface ILinearMap<T> : IEnumerable<KeyValuePair<LinearMapId, T>> {
         LinearMapId FreeId { get; }
         int Count { get; }
         int Capacity { get; }

@@ -1,75 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Hull.Extensions;
+using Hull.GameClient.Observers;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState.Properties;
 
 namespace Hull.GameServer.ServerState {
+    /// <summary>
+    /// State is a main thing of the client-server interaction. State contains all the information to restore game in any moment.
+    /// Only server can change the state. Client should send requests to the server to ask server to change the state.
+    /// Since state is <see cref="AbstractComplexStateProperty"/> it can hold only fields that implement <see cref="IStateProperty"/> interface.
+    /// To create your game state - inherit it from this class and add all required fields.
+    /// Any state properrty, when changed, will be marked as changes and also will mark as changed its container and container of container etc., up to state. So if any state was changed - state will be marked as changed.
+    /// Observers can be used to react on property changes on client side. <seealso cref="StatePropertyObserver{TState,TProperty}"/>
+    /// </summary>
     [Serializable]
-    public class State : AbstractStatePropertyContainer {
-        private readonly StateParts _parts = new StateParts();
+    public abstract class State : AbstractComplexStateProperty , IDeserializationCallback {
         private readonly List<IStateChangeInfo> _changeInfo = new List<IStateChangeInfo>();
         private ulong _stateUpdateId;
 
+        /// <summary>
+        /// Initialized the new state
+        /// </summary>
         public State() {
-            _parts.CurrentState = this;
+            Container = this;
         }
 
-        protected State(SerializationInfo info, StreamingContext context) : base(info, context) {
-            _parts = (StateParts)info.GetValue("_parts", typeof(StateParts));
-        }
+        protected State(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
-            base.GetObjectData(info, context);
-            info.AddValue("_parts", _parts, typeof(StateParts));
-        }
-
-        public T GetPart<T>() where T : IStatePart {
-            return (T)GetPart(typeof(T));
-        }
-
-        public IStatePart GetPart(Type partType) {
-            return _parts[partType];
-        }
-
-        public T AddPart<T>() where T : IStatePart {
-            if (IsReadonly) {
-                throw new AccessViolationException();
-            }
-            return (T)AddPart(typeof(T));
-        }
-
-        public IStatePart AddPart(Type partType) {
-            if (partType.GetInterfaces().IndexOf(typeof(IStatePart)) == -1) {
-                throw new ArgumentException(
-                    string.Format("<{0}> should implement <{1}>", partType.Name, typeof(IStatePart).Name));
-            }
-            if (_parts.ContainsKey(partType)) {
-                throw new ArgumentException(string.Format("State already contains part <{0}>", partType.Name));
-            }
-            var statePart = (IStatePart)Activator.CreateInstance(partType);
-            _parts[partType] = statePart;
-            statePart.Container = this;
-            return statePart;
-        }
-
-        public bool HasPart<T>() where T : IStatePart {
-            return HasPart(typeof(T));
-        }
-
-        public bool HasPart(Type partType) {
-            return _parts.ContainsKey(partType);
-        }
-
+        /// <summary>
+        /// This field holds server's tick number from the start of the game. Note: it can be used aoly to compare to other UpdateId's since it can be reset at any time. 
+        /// </summary>
         public new ulong UpdateId {
             get { return _stateUpdateId; }
         }
 
+        /// <summary>
+        /// Returns <value>true</value> if state is modified since last tick.
+        /// </summary>
         public override bool IsModified {
             get { return base.UpdateId == UpdateId; }
         }
 
+        /// <summary>
+        /// Returns <value>true</value> if modification of the state is prohibited. 
+        /// It will be always <value>false</value> when <see cref="IUpdater{TState,TRuntime}.Update"/> or <see cref="IRequestProcessor{TState,TRuntime}.ProcessRequest"/> method called.
+        /// It will be always <value>true</value> for client. 
+        /// </summary>
         public bool IsReadonly { get; private set; }
 
         internal void BeginUpdate() {
@@ -84,27 +61,36 @@ namespace Hull.GameServer.ServerState {
             IsReadonly = true;
         }
 
+        /// <summary>
+        /// Server can add any additional information when changed the state. 
+        /// This ingormation will be whiped at the beginning of the next tick. 
+        /// </summary>
+        /// <param name="changeInfo"></param>
+        /// <exception cref="AccessViolationException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
         internal void AddChangeInfo(IStateChangeInfo changeInfo) {
+            if (IsReadonly) {
+                throw new AccessViolationException();
+            }
+            if (changeInfo == null) {
+                throw new ArgumentNullException("changeInfo");
+            }
             _changeInfo.Add(changeInfo);
         }
 
+        /// <summary>
+        /// All change info items that was added since last tick
+        /// </summary>
         public IEnumerable<IStateChangeInfo> ChangeInfo {
             get { return _changeInfo; }
-        }
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context) {
-            _parts.CurrentState = this;
         }
 
         protected override State CurrentState {
             get { return this; }
         }
 
-        public override void ForceModify() {
-            foreach (var kvp in _parts) {
-                kvp.Value.ForceModify();
-            }
+        public void OnDeserialization(object sender) {
+            Container = this;
         }
     }
 }

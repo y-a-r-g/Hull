@@ -5,14 +5,26 @@ using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
+    /// <summary>
+    /// Simple array state property. Can hold array of any type. Though it cannot monitor internal item value changes. It will be marked as modified only if item or whole array is replaced.
+    /// </summary>
+    /// <typeparam name="TValue">Type of value array</typeparam>
     [Serializable]
-    public class SimpleArrayStateProperty<TValue>
-        : AbstractStatePropertyContainer, IEnumerable<TValue>, IIndexedAccess<TValue, int>
+    public class SimpleArrayStateProperty<TValue> : AbstractStatePropertyContainer,
+                                                    IEnumerable<TValue>
         where TValue : struct {
         private TValue[] _value;
 
+        /// <summary>
+        /// Creates property with empty array
+        /// </summary>
         public SimpleArrayStateProperty() : this(null) { }
 
+        /// <summary>
+        /// Creates property from given array. Property will contain copy of given array.
+        /// </summary>
+        /// <param name="value">New array. Null is treated as empty array</param>
+        /// <param name="doNotCopyReference">Prevent making of copy. Given array will be referenced</param>
         public SimpleArrayStateProperty(TValue[] value, bool doNotCopyReference = false) {
             Set(value, doNotCopyReference);
         }
@@ -27,8 +39,13 @@ namespace Hull.GameServer.ServerState.Properties {
             info.AddValue("_value", _value, typeof(TValue[]));
         }
 
+        /// <summary>
+        /// Sets new array value. Property will contain copy of given array.
+        /// </summary>
+        /// <param name="value">New array. Null is treated as empty array</param>
+        /// <param name="doNotCopyReference">Prevent making of copy. Given array will be referenced</param>
         public void Set(TValue[] value, bool doNotCopyReference = false) {
-            Modify();
+            Modify(ModificationType.Changed);
             if (value == null) {
                 value = new TValue[0];
             }
@@ -43,20 +60,31 @@ namespace Hull.GameServer.ServerState.Properties {
             }
         }
 
+        /// <summary>
+        /// Acces to the item by index.
+        /// </summary>
+        /// <param name="index"></param>
         public TValue this[int index] {
             get { return _value[index]; }
             set {
-                Modify();
+                Modify(ModificationType.Changed);
                 _value[index] = value;
             }
         }
 
+        /// <summary>
+        /// Amount of items in array
+        /// </summary>
         public int Count {
             get { return _value.Length; }
         }
 
+        /// <summary>
+        /// Changes array size. It will keep existing items.
+        /// </summary>
+        /// <param name="size">New size of the array</param>
         public void Resize(int size) {
-            Modify();
+            Modify(ModificationType.Changed);
             if (size != _value.Length) {
                 var newArray = new TValue[size];
                 Array.Copy(_value, newArray, size < _value.Length ? size : _value.Length);
@@ -72,9 +100,8 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
-        public bool TryGetValue(int index, out TValue value) {
-            value = this[index];
-            return true;
+        protected override void ModifyChildren(ModificationType modificationType) {
+            
         }
     }
 }

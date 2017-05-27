@@ -50,26 +50,12 @@ namespace Hull.GameServer.ServerState.Properties {
             }
         }
 
-        public override IStatePropertyContainer Container {
-            get { return base.Container; }
-            set {
-                base.Container = value;
-                if (_fields != null) {
-                    foreach (var field in _fields) {
-                        var prop = ((IStateProperty)field.GetValue(this));
-                        if (prop != null) {
-                            prop.Container = this;
-                        }
-                    }
+        protected override void ModifyChildren(ModificationType modificationType) {
+            if (_fields != null) {
+                foreach (var fieldInfo in _fields) {
+                    var field = (IStateProperty)fieldInfo.GetValue(this);
+                    ModifyChild(field, modificationType);
                 }
-            }
-        }
-
-        public override void ForceModify() {
-            base.ForceModify();
-            foreach (var field in _fields) {
-                var prop = ((IStateProperty)field.GetValue(this));
-                prop.ForceModify();
             }
         }
     }

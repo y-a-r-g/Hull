@@ -1,35 +1,58 @@
 ﻿using System;
-using System.Reflection;
-using Hull.Extensions;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
 
 namespace Hull.GameClient.Observers {
-    public class StatePropertiesObserver<TStatePart> : IStateObserver where TStatePart : AbstractStatePart {
+    /// <summary>
+    /// Observes multiple properties and triggers event if they all or any of them (depends on mode) were changed.
+    /// </summary>
+    /// <typeparam name="TState">State type</typeparam>
+    public class StatePropertiesObserver<TState> : IStateObserver<TState> where TState : State {
         private readonly ObserveMode _mode;
-        private readonly Type _partType;
-        private readonly FieldInfo[] _fields;
+        private readonly IStateProperty[] _properties;
 
-        public delegate void ObservedStatePropertiesChangedDelegate(TStatePart statePart, State state);
+        public delegate void ObservedStatePropertiesChangedDelegate(TState state);
 
         public event ObservedStatePropertiesChangedDelegate ObservedStatePropertiesChanged;
 
-        public StatePropertiesObserver(string[] propertyNames, ObserveMode mode = ObserveMode.Any) {
+        /// <summary>
+        /// Creates on observer for properties passed as params
+        /// </summary>
+        /// <param name="mode">Observing mode</param>
+        /// <param name="properties"></param>
+        public StatePropertiesObserver(ObserveMode mode, params IStateProperty[] properties) 
+            : this(properties, mode) { }
+
+        /// <summary>
+        /// Creates an observer for given properties with specified mode
+        /// </summary>
+        /// <param name="properties">Properties to observe</param>
+        /// <param name="mode">Observe mode</param>
+        /// <exception cref="ArgumentNullException">Properties are null or one of properties is null</exception>
+        /// <exception cref="ArgumentException">Properties are empty</exception>
+        public StatePropertiesObserver(IStateProperty[] properties, ObserveMode mode = ObserveMode.Any) {
+            if (properties == null) {
+                throw new ArgumentNullException("properties");
+            }
+            if (properties.Length == 0) {
+                throw new ArgumentException("Properties are empty", "properties");
+            }
+            foreach (var property in properties) {
+                if (property == null) {
+                    throw new ArgumentNullException("properties");
+                }
+            }
+            _properties = properties;
             _mode = mode;
-            _partType = typeof(TStatePart);
-            _fields = propertyNames.Map(pn => _partType.GetField(pn));
         }
 
-        public void OnStateChange(State state) {
+        public void OnStateChange(TState state) {
             if (ObservedStatePropertiesChanged != null) {
-                var part = (TStatePart)state.GetPart(_partType);
-
-                foreach (var fieldInfo in _fields) {
-                    var property = (IStateProperty)fieldInfo.GetValue(part);
+                foreach (var property in _properties) {
                     if (property.IsModified) {
                         if (_mode == ObserveMode.Any) {
-                            ObservedStatePropertiesChanged(part, state);
+                            ObservedStatePropertiesChanged(state);
                             break;
                         }
                     }
@@ -40,7 +63,7 @@ namespace Hull.GameClient.Observers {
                     }
                 }
                 if (_mode == ObserveMode.All) {
-                    ObservedStatePropertiesChanged(part, state);
+                    ObservedStatePropertiesChanged(state);
                 }
             }
         }

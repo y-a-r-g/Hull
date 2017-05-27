@@ -1,33 +1,68 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.ServerState;
 using UnityEngine;
 
 namespace Hull.GameClient.Observers {
-    public class StateObserver : IStateObserver {
+    /// <summary>
+    /// Main state observer. It manages all properties observers.
+    /// All notification about state changes are stored in line and observing can be paused.
+    /// </summary>
+    /// <typeparam name="TState">State type</typeparam>
+    public class StateObserver<TState> where TState : State {
+        /// <summary>
+        /// Time passed since last server tick
+        /// </summary>
         public float TimeSinceLastUpdate {
             get { return Time.time - _lastUpdateTime; }
         }
 
         private float _lastUpdateTime;
         private int _pauseObservingCounter;
-        private Queue<State> _statesLine = new Queue<State>();
+        private readonly Queue<TState> _statesLine = new Queue<TState>();
 
-        private readonly LinkedList<IStateObserver> _observers = new LinkedList<IStateObserver>();
+        private readonly LinkedList<IStateObserver<TState>> _observers = new LinkedList<IStateObserver<TState>>();
 
-        public StateObserver(IServerConnector serverConnector) {
+        /// <summary>
+        /// Creates an instance of the state observer.
+        /// </summary>
+        /// <param name="serverConnector">Server connector used to receive state</param>
+        /// <exception cref="ArgumentNullException">Server Connector is null</exception>
+        public StateObserver(IServerConnector<TState> serverConnector) {
+            if (serverConnector == null) {
+                throw new ArgumentNullException("serverConnector");
+            }
+            
             serverConnector.StateChanged += OnStateChange;
         }
 
-        public void AddStateObserver(IStateObserver stateObserver) {
+        /// <summary>
+        /// Adds an observer to the state property. <seealso cref="StatePropertyObserver{TState,TProperty}"/>
+        /// Observer will be notified about state change.
+        /// </summary>
+        /// <param name="stateObserver">Property observer</param>
+        /// <exception cref="ArgumentNullException">Property Observer is null</exception>
+        public void AddStateObserver(IStateObserver<TState> stateObserver) {
+            if (stateObserver == null) {
+                throw new ArgumentNullException("stateObserver");
+            }
             _observers.AddLast(stateObserver);
         }
 
-        public void RemoveStateObserver(IStateObserver stateObserver) {
+        /// <summary>
+        /// Removes an observer. Observer will no longer being notified on state changes.
+        /// </summary>
+        /// <param name="stateObserver"></param>
+        /// <exception cref="ArgumentNullException">Property Observer is null</exception>
+        public void RemoveStateObserver(IStateObserver<TState> stateObserver) {
+            if (stateObserver == null) {
+                throw new ArgumentNullException("stateObserver");
+            }
             _observers.Remove(stateObserver);
         }
 
-        public void OnStateChange(State state) {
+        private void OnStateChange(TState state) {
             if ((_pauseObservingCounter == 0) && (_statesLine.Count == 0)) {
                 NotifyObserves(state);
             }
@@ -36,10 +71,16 @@ namespace Hull.GameClient.Observers {
             }
         }
 
+        /// <summary>
+        /// Pauses all futher observers notification. All received state changes will be held. They will keep order when resumed. 
+        /// </summary>
         public void PauseObserving() {
             _pauseObservingCounter++;
         }
 
+        /// <summary>
+        /// Continue observing.
+        /// </summary>
         public void ResumeObserving() {
             _pauseObservingCounter--;
 
@@ -50,7 +91,7 @@ namespace Hull.GameClient.Observers {
             }
         }
 
-        private void NotifyObserves(State state) {
+        private void NotifyObserves(TState state) {
             _lastUpdateTime = Time.time;
 
             var iterator = _observers.First;

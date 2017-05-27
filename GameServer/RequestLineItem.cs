@@ -1,7 +1,7 @@
 ﻿using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer {
-    internal struct RequestLiteItem {
+    internal struct RequestLineItem {
         public IPlayer Player;
         public IRequest Request;
     }
