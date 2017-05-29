@@ -2,27 +2,27 @@
 using Hull.GameClient.Interfaces;
 using Hull.GameClient.Observers;
 using Hull.GameServer.Interfaces;
-using Server;
-using Shared.State;
+using Hull.GameServer.ServerState;
 
 namespace Hull.GameServer {
     /// <summary>
     /// Local server is used to emulate client-server game localy.
     /// </summary>
-    public class LocalServer : IServerConnector<TVState> {
-        private readonly GameProcessor<TVState, TVServerRuntime> _gameProcessor;
+    public class LocalServer<TState, TServerRuntime> : IServerConnector<TState>
+        where TState : State where TServerRuntime : IServerRuntime {
+        private readonly GameProcessor<TState, TServerRuntime> _gameProcessor;
 
         /// <summary>
         /// Triggered whrn state was changed. Use <seealso cref="StateObserver{TState}"/> to handle it.
         /// </summary>
-        public event Action<TVState> StateChanged;
+        public event Action<TState> StateChanged;
 
         /// <summary>
         /// Creates new Local Server with given Game Processor
         /// </summary>
         /// <param name="gameProcessor"></param>
         /// <exception cref="ArgumentNullException">Game Processor is null</exception>
-        public LocalServer(GameProcessor<TVState, TVServerRuntime> gameProcessor) {
+        public LocalServer(GameProcessor<TState, TServerRuntime> gameProcessor) {
             if (gameProcessor == null) {
                 throw new ArgumentNullException("gameProcessor");
             }
@@ -30,7 +30,7 @@ namespace Hull.GameServer {
             gameProcessor.StateChanged += OnStateChange;
         }
 
-        private void OnStateChange(TVState state) {
+        private void OnStateChange(TState state) {
             if (StateChanged != null) {
                 StateChanged(state);
             }
