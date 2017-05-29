@@ -34,10 +34,19 @@ namespace Hull.GameClient.Observers {
         }
 
         public void OnStateChange(TState state) {
+            if (_property.IsModified) {
+                PropertyChanged(_property, state);
+            }
+        }
+
+        /// <summary>
+        /// Called when property was changed. Do not call base implementation when override if you dont need event being triggered
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="state"></param>
+        protected virtual void PropertyChanged(TProperty property, TState state) {
             if (ObservedStatePropertyChanged != null) {
-                if (_property.IsModified) {
-                    ObservedStatePropertyChanged(_property, state);
-                }
+                ObservedStatePropertyChanged(_property, state);
             }
         }
     }

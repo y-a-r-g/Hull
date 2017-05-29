@@ -21,7 +21,7 @@ namespace Hull.GameClient.Observers {
         /// </summary>
         /// <param name="mode">Observing mode</param>
         /// <param name="properties"></param>
-        public StatePropertiesObserver(ObserveMode mode, params IStateProperty[] properties) 
+        public StatePropertiesObserver(ObserveMode mode, params IStateProperty[] properties)
             : this(properties, mode) { }
 
         /// <summary>
@@ -48,23 +48,31 @@ namespace Hull.GameClient.Observers {
         }
 
         public void OnStateChange(TState state) {
+            foreach (var property in _properties) {
+                if (property.IsModified) {
+                    if (_mode == ObserveMode.Any) {
+                        PropertyChanged(state);
+                        break;
+                    }
+                }
+                else {
+                    if (_mode == ObserveMode.All) {
+                        return;
+                    }
+                }
+            }
+            if (_mode == ObserveMode.All) {
+                PropertyChanged(state);
+            }
+        }
+
+        /// <summary>
+        /// Called when property was changed. Do not call base implementation when override if you dont need event being triggered
+        /// </summary>
+        /// <param name="state"></param>
+        protected virtual void PropertyChanged(TState state) {
             if (ObservedStatePropertiesChanged != null) {
-                foreach (var property in _properties) {
-                    if (property.IsModified) {
-                        if (_mode == ObserveMode.Any) {
-                            ObservedStatePropertiesChanged(state);
-                            break;
-                        }
-                    }
-                    else {
-                        if (_mode == ObserveMode.All) {
-                            return;
-                        }
-                    }
-                }
-                if (_mode == ObserveMode.All) {
-                    ObservedStatePropertiesChanged(state);
-                }
+                ObservedStatePropertiesChanged(state);
             }
         }
     }
