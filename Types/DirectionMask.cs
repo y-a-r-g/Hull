@@ -9,7 +9,7 @@ namespace Hull.Types {
 
         public DirectionMask(DirectionMask mask = default(DirectionMask)) : this(mask._mask) { }
 
-        internal DirectionMask(int mask) {
+        public DirectionMask(int mask) {
             _mask = mask;
         }
 
@@ -56,7 +56,7 @@ namespace Hull.Types {
         public DirectionMask Without(Direction direction) {
             return new DirectionMask(_mask & (~direction._mask));
         }
-        
+
         public DirectionMask Without(DirectionMask mask) {
             return new DirectionMask(_mask & (~mask._mask));
         }
@@ -79,6 +79,10 @@ namespace Hull.Types {
         }
 
         public override int GetHashCode() {
+            return _mask;
+        }
+
+        public int ToInt() {
             return _mask;
         }
     }
