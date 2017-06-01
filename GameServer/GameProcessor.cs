@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
 #if UNITY_5
@@ -8,7 +9,6 @@ using UnityEngine;
 #endif
 
 namespace Hull.GameServer {
-    
     /// <summary>
     /// Core part of the game server. Controls the launching of Request Processors and Updaters. Raises event when state changed.
     ///
@@ -17,16 +17,16 @@ namespace Hull.GameServer {
     /// All updaters are called in order they were added.
     /// <code>StateChanged</code> event is triggered, if state changed.
     /// 
-    /// Request are not processed imppediately, they are stored in line and called at the beginning of the next tick.
+    /// Request are not processed imppediately, they are stored in queue and called at the beginning of the next tick.
     ///
     /// </summary>
     /// <typeparam name="TState">Type of the server <see cref="State"/></typeparam>
     /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
     public class GameProcessor<TState, TRuntime> where TState : State where TRuntime : IServerRuntime {
-        private readonly Dictionary<Type, IRequestProcessor<TState, TRuntime>> _requestProcessors =
-            new Dictionary<Type, IRequestProcessor<TState, TRuntime>>();
+        private readonly Dictionary<Type, RequestProcessorItem> _requestProcessors =
+            new Dictionary<Type, RequestProcessorItem>();
 
-        private readonly Queue<RequestLineItem> _requestsLine = new Queue<RequestLineItem>();
+        private readonly Queue<RequestQueueItem> _requestsQueue = new Queue<RequestQueueItem>();
         private readonly TState _state;
         private readonly TRuntime _runtime;
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
@@ -87,14 +87,20 @@ namespace Hull.GameServer {
 
         private void FixedUpdate() {
             _state.BeginUpdate();
-            while (_requestsLine.Count > 0) {
-                var item = _requestsLine.Dequeue();
-                IRequestProcessor<TState, TRuntime> processor;
+            while (_requestsQueue.Count > 0) {
+                var item = _requestsQueue.Dequeue();
+                RequestProcessorItem processor;
                 if (!_requestProcessors.TryGetValue(item.Request.GetType(), out processor)) {
                     throw new ArgumentOutOfRangeException(
                         string.Format("Processor for <{0}> request is not registered", item.Request.GetType()));
                 }
-                processor.ProcessRequest(item.Request, item.Player, _state, _runtime);
+                try {
+                    processor.ProcessMethod.Invoke(
+                        processor.RequestProcessor, new object[] {item.Request, item.Player, _state, _runtime});
+                }
+                catch (Exception ex) {
+                    Debug.Log(ex);
+                }
             }
 #if UNITY_5
             var dt = Time.deltaTime;
@@ -117,16 +123,19 @@ namespace Hull.GameServer {
         /// <param name="processor">Associated Request Processor</param>
         /// <typeparam name="TRequest">Request type</typeparam>
         /// <exception cref="ArgumentNullException">Processor is null</exception>
-        public void RegisterProcessor<TRequest>(IRequestProcessor<TState, TRuntime> processor)
+        public void RegisterProcessor<TRequest>(IRequestProcessor<TState, TRuntime, TRequest> processor)
             where TRequest : IRequest {
             if (processor == null) {
                 throw new ArgumentNullException("processor");
             }
-            _requestProcessors[typeof(TRequest)] = processor;
+            _requestProcessors[typeof(TRequest)] = new RequestProcessorItem {
+                RequestProcessor =  processor,
+                ProcessMethod = processor.GetType().GetMethod("ProcessRequest")
+            };
         }
 
         /// <summary>
-        /// Adds a request to the line. This request will be processed in the beginning of the next tick.
+        /// Adds a request to the queue. This request will be processed in the beginning of the next tick.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="player"></param>
@@ -135,7 +144,7 @@ namespace Hull.GameServer {
             if (request == null) {
                 throw new ArgumentNullException("request");
             }
-            _requestsLine.Enqueue(new RequestLineItem {Request = request, Player = player});
+            _requestsQueue.Enqueue(new RequestQueueItem {Request = request, Player = player});
         }
 
         /// <summary>

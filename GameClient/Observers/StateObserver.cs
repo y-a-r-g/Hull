@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Hull.GameClient.Observers {
     /// <summary>
     /// Main state observer. It manages all properties observers.
-    /// All notification about state changes are stored in line and observing can be paused.
+    /// All notification about state changes are stored in queue and observing can be paused.
     /// </summary>
     /// <typeparam name="TState">State type</typeparam>
     public class StateObserver<TState> where TState : State {
