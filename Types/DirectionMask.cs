@@ -92,7 +92,11 @@ namespace Hull.Types {
             foreach (var direction in Direction.All) {
                 if (Contains(direction)) {
                     stringBuilder.Append(direction);
+                    stringBuilder.Append("+");
                 }
+            }
+            if (stringBuilder.Length > 0) {
+                stringBuilder.Remove(stringBuilder.Length - 1, 1);
             }
             return stringBuilder.ToString();
         }
