@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Text;
 using Hull.Extensions;
 
 namespace Hull.Types {
@@ -84,6 +85,16 @@ namespace Hull.Types {
 
         public int ToInt() {
             return _mask;
+        }
+
+        public override string ToString() {
+            var stringBuilder = new StringBuilder();
+            foreach (var direction in Direction.All) {
+                if (Contains(direction)) {
+                    stringBuilder.Append(direction);
+                }
+            }
+            return stringBuilder.ToString();
         }
     }
 }
