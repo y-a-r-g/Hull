@@ -24,11 +24,11 @@ namespace Hull.Types {
         public static Vector2I operator *(Vector2I v, int m) {
             return new Vector2I(v.X * m, v.Y * m);
         }
-        
+
         public static Vector2I operator *(int m, Vector2I v) {
             return new Vector2I(v.X * m, v.Y * m);
         }
-        
+
         public static Vector2I operator /(Vector2I v, int d) {
             return new Vector2I(v.X / d, v.Y / d);
         }

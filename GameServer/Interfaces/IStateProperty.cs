@@ -10,17 +10,17 @@ namespace Hull.GameServer.Interfaces {
         /// Parent property for this property.
         /// </summary>
         IStatePropertyContainer Container { get; set; }
-        
+
         /// <summary>
         /// Returns <code>true</code> if this property was changed since last tick.
         /// </summary>
         bool IsModified { get; }
-        
+
         /// <summary>
         /// Hold type of last property modification.
         /// </summary>
         ModificationType ModificationType { get; }
-        
+
         /// <summary>
         /// Property should mark itself as modified and call this method of its <see cref="Container"/>.
         /// </summary>

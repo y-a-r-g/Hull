@@ -7,10 +7,12 @@
         /// Propery value was changed
         /// </summary>
         Changed,
+
         /// <summary>
         /// Property was added to parent
         /// </summary>
         Added,
+
         /// <summary>
         /// Property was removed from parent
         /// </summary>

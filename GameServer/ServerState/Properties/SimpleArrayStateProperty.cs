@@ -100,8 +100,6 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
-        protected override void ModifyChildren(ModificationType modificationType) {
-            
-        }
+        protected override void ModifyChildren(ModificationType modificationType) { }
     }
 }

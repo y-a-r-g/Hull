@@ -9,7 +9,7 @@ namespace Hull.GameClient.Interfaces {
         /// Triggered when runtime was changed
         /// </summary>
         event Action Changed;
-        
+
         /// <summary>
         /// Used to notyfy that runtime was changed
         /// </summary>

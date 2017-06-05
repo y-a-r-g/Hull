@@ -15,7 +15,7 @@ namespace Hull.GameServer.ServerState {
     /// Observers can be used to react on property changes on client side. <seealso cref="StatePropertyObserver{TState,TProperty}"/>
     /// </summary>
     [Serializable]
-    public abstract class State : AbstractComplexStateProperty , IDeserializationCallback {
+    public abstract class State : AbstractComplexStateProperty, IDeserializationCallback {
         private readonly List<IStateChangeInfo> _changeInfo = new List<IStateChangeInfo>();
         private ulong _stateUpdateId;
 

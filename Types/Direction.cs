@@ -99,15 +99,15 @@ namespace Hull.Types {
 
             return Invalid;
         }
-        
+
         public static explicit operator DirectionMask(Direction direction) {
             return new DirectionMask(direction._mask);
-        } 
+        }
 
         public Direction NextCW {
             get { return FromMask(_mask == 0x80 ? 0x1 : _mask << 1); }
         }
-        
+
         public Direction NextCW4 {
             get { return FromMask(_mask == 0x80 ? 0x1 : _mask << 2); }
         }
@@ -115,7 +115,7 @@ namespace Hull.Types {
         public Direction NextCCW {
             get { return FromMask(_mask == 0x01 ? 0x80 : _mask >> 1); }
         }
-        
+
         public Direction NextCCW4 {
             get { return FromMask(_mask == 0x01 ? 0x80 : _mask >> 2); }
         }

@@ -12,7 +12,7 @@ namespace Hull.GameClient.Interfaces {
         /// Should be triggered when state was changed
         /// </summary>
         event Action<TState> StateChanged;
-        
+
         /// <summary>
         /// Used by the client to send requests to the server 
         /// </summary>

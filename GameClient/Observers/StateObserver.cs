@@ -33,7 +33,7 @@ namespace Hull.GameClient.Observers {
             if (serverConnector == null) {
                 throw new ArgumentNullException("serverConnector");
             }
-            
+
             serverConnector.StateChanged += OnStateChange;
         }
 

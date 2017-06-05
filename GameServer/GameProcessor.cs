@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
 #if UNITY_5
@@ -129,7 +128,7 @@ namespace Hull.GameServer {
                 throw new ArgumentNullException("processor");
             }
             _requestProcessors[typeof(TRequest)] = new RequestProcessorItem {
-                RequestProcessor =  processor,
+                RequestProcessor = processor,
                 ProcessMethod = processor.GetType().GetMethod("ProcessRequest")
             };
         }

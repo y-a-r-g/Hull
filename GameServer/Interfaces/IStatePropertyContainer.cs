@@ -1,5 +1,4 @@
 ﻿namespace Hull.GameServer.Interfaces {
-    
     /// <summary>
     /// Interface for the property that can hold other nested properties
     /// </summary>

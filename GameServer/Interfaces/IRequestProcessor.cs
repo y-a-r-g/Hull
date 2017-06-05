@@ -9,8 +9,8 @@ namespace Hull.GameServer.Interfaces {
     /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
     /// <typeparam name="TRequest">Processed request type</typeparam>
     public interface IRequestProcessor<in TState, in TRuntime, in TRequest>
-        where TState : State 
-        where TRuntime : IServerRuntime 
+        where TState : State
+        where TRuntime : IServerRuntime
         where TRequest : IRequest {
         /// <summary>
         /// Implementation should contain reaction to the request. State modification is allowed here. Client will be notified about all the changes made with state. 

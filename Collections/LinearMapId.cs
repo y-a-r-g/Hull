@@ -9,13 +9,13 @@ namespace Hull.Collections {
             Value = value;
         }
 
-    public static bool operator ==(LinearMapId a, LinearMapId b) {
-        return a.Value == b.Value;
-    }
+        public static bool operator ==(LinearMapId a, LinearMapId b) {
+            return a.Value == b.Value;
+        }
 
-    public static bool operator !=(LinearMapId a, LinearMapId b) {
-        return !(a==b);
-    }
+        public static bool operator !=(LinearMapId a, LinearMapId b) {
+            return !(a == b);
+        }
 
         public override bool Equals(object obj) {
             return (obj != null) && (Value == ((LinearMapId)obj).Value);

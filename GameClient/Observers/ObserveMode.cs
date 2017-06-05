@@ -7,6 +7,7 @@
         /// Triggers if all properties were changed
         /// </summary>
         Any,
+
         /// <summary>
         /// Triggers if any property was changed
         /// </summary>

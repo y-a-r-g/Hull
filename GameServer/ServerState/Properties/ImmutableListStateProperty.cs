@@ -71,8 +71,6 @@ namespace Hull.GameServer.ServerState.Properties {
             _list = value;
         }
 
-        protected override void ModifyChildren(ModificationType modificationType) {
-            
-        }
+        protected override void ModifyChildren(ModificationType modificationType) { }
     }
 }

@@ -8,6 +8,7 @@ namespace Hull.GameServer {
     /// </summary>
     public class ServerRuntime : IServerRuntime {
         private readonly LinkedList<IEnumerator> _coroutines = new LinkedList<IEnumerator>();
+
         /// <summary>
         /// Starts a coroutine.
         /// 

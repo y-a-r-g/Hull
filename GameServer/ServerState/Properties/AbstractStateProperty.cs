@@ -9,7 +9,7 @@ namespace Hull.GameServer.ServerState.Properties {
         private IStatePropertyContainer _container;
         protected ulong UpdateId;
         private ModificationType _modificationType;
-        
+
         protected AbstractStateProperty() { }
 
         protected AbstractStateProperty(SerializationInfo info, StreamingContext context) {
@@ -27,7 +27,7 @@ namespace Hull.GameServer.ServerState.Properties {
                     while ((prop.Container != null) && (prop.Container != prop)) {
                         prop = prop.Container;
                     }
-                    
+
                     if ((prop != this) && (prop is State)) {
                         _state = (State)prop;
                     }
@@ -35,7 +35,7 @@ namespace Hull.GameServer.ServerState.Properties {
                 return _state;
             }
         }
-        
+
         public virtual IStatePropertyContainer Container {
             get { return _container; }
             set {
@@ -67,7 +67,7 @@ namespace Hull.GameServer.ServerState.Properties {
 
                 UpdateId = CurrentState.UpdateId;
                 _modificationType = modificationType;
-                
+
                 if ((Container != null) && (Container != this)) {
                     Container.Modify(ModificationType.Changed);
                 }
