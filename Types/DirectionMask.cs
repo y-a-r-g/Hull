@@ -86,6 +86,22 @@ namespace Hull.Types {
         public int ToInt() {
             return _mask;
         }
+        
+        public DirectionMask NextCW {
+            get { return new DirectionMask(((_mask << 1) & 0xFF) | ((_mask >> 7) & 0x01)); }
+        }
+
+        public DirectionMask NextCW4 {
+            get { return new DirectionMask(((_mask << 2) & 0xFF) | ((_mask >> 6) & 0x03)); }
+        }
+
+        public DirectionMask NextCCW {
+            get { return new DirectionMask((_mask >> 1) | ((_mask & 0x01) << 7)); }
+        }
+
+        public DirectionMask NextCCW4 {
+            get { return new DirectionMask((_mask >> 2) | ((_mask & 0x03) << 6)); }
+        }
 
         public override string ToString() {
             var stringBuilder = new StringBuilder();

@@ -105,19 +105,19 @@ namespace Hull.Types {
         }
 
         public Direction NextCW {
-            get { return FromMask(_mask == 0x80 ? 0x1 : _mask << 1); }
+            get { return FromMask(((_mask << 1) & 0xFF) | ((_mask >> 7) & 0x01)); }
         }
 
         public Direction NextCW4 {
-            get { return FromMask(_mask == 0x80 ? 0x1 : _mask << 2); }
+            get { return FromMask(((_mask << 2) & 0xFF) | ((_mask >> 6) & 0x03)); }
         }
 
         public Direction NextCCW {
-            get { return FromMask(_mask == 0x01 ? 0x80 : _mask >> 1); }
+            get { return FromMask((_mask >> 1) | ((_mask & 0x01) << 7)); }
         }
 
         public Direction NextCCW4 {
-            get { return FromMask(_mask == 0x01 ? 0x80 : _mask >> 2); }
+            get { return FromMask((_mask >> 2) | ((_mask & 0x03) << 6)); }
         }
 
         public Direction Negative {

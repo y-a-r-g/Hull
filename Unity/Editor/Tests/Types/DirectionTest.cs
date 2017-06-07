@@ -63,6 +63,30 @@ namespace Hull.Unity.Editor.Tests.Types {
             Assert.AreEqual(Direction.SW, Direction.W.NextCCW);
             Assert.AreEqual(Direction.W, Direction.NW.NextCCW);
         }
+        
+        [Test]
+        public void NextCW4() {
+            Assert.AreEqual(Direction.E, Direction.N.NextCW4);
+            Assert.AreEqual(Direction.SE, Direction.NE.NextCW4);
+            Assert.AreEqual(Direction.S, Direction.E.NextCW4);
+            Assert.AreEqual(Direction.SW, Direction.SE.NextCW4);
+            Assert.AreEqual(Direction.W, Direction.S.NextCW4);
+            Assert.AreEqual(Direction.NW, Direction.SW.NextCW4);
+            Assert.AreEqual(Direction.N, Direction.W.NextCW4);
+            Assert.AreEqual(Direction.NE, Direction.NW.NextCW4);
+        }
+
+        [Test]
+        public void NextCCW4() {
+            Assert.AreEqual(Direction.W, Direction.N.NextCCW4);
+            Assert.AreEqual(Direction.NW, Direction.NE.NextCCW4);
+            Assert.AreEqual(Direction.N, Direction.E.NextCCW4);
+            Assert.AreEqual(Direction.NE, Direction.SE.NextCCW4);
+            Assert.AreEqual(Direction.E, Direction.S.NextCCW4);
+            Assert.AreEqual(Direction.SE, Direction.SW.NextCCW4);
+            Assert.AreEqual(Direction.S, Direction.W.NextCCW4);
+            Assert.AreEqual(Direction.SW, Direction.NW.NextCCW4);
+        }
 
         [Test]
         public void Negative() {
