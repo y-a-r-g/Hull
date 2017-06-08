@@ -1,4 +1,5 @@
 ﻿using System;
+using Hull.Extensions;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
@@ -10,7 +11,8 @@ namespace Hull.GameClient.Observers {
     /// <typeparam name="TState">State type</typeparam>
     public class StatePropertiesObserver<TState> : IStateObserver<TState> where TState : State {
         private readonly ObserveMode _mode;
-        private readonly IStateProperty[] _properties;
+        private readonly ulong[] _propertyUniqueIds;
+        private ulong[][] _paths;
 
         public delegate void ObservedStatePropertiesChangedDelegate(TState state);
 
@@ -43,12 +45,16 @@ namespace Hull.GameClient.Observers {
                     throw new ArgumentNullException("properties");
                 }
             }
-            _properties = properties;
+            _propertyUniqueIds = properties.Map(p => p.UniqueId);
             _mode = mode;
         }
 
         public void OnStateChange(TState state) {
-            foreach (var property in _properties) {
+            if (_paths == null) {
+                _paths = _propertyUniqueIds.Map(id => PropertyFinder.GetPropertyPath(state, id));
+            }
+            foreach (var path in _paths) {
+                var property = PropertyFinder.FindProperty(state, path);
                 if (property.IsModified) {
                     if (_mode == ObserveMode.Any) {
                         PropertyChanged(state);

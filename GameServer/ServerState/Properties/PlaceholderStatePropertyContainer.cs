@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
 
@@ -7,7 +8,10 @@ namespace Hull.GameServer.ServerState.Properties {
     internal class PlaceholderStatePropertyContainer : AbstractStatePropertyContainer {
         public delegate void ModifyChildrenDelegate(ModificationType modificationType);
 
+        public delegate IEnumerator<IStateProperty> GetChildrenEnumeratorDelegate();
+
         public ModifyChildrenDelegate ModifyChildrenImpl;
+        public GetChildrenEnumeratorDelegate GetChildrenEnumeratorImpl;
 
         public PlaceholderStatePropertyContainer() { }
 
@@ -16,6 +20,10 @@ namespace Hull.GameServer.ServerState.Properties {
 
         protected override void ModifyChildren(ModificationType modificationType) {
             ModifyChildrenImpl(modificationType);
+        }
+
+        public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return GetChildrenEnumeratorImpl();
         }
 
         public new void ModifyChild(IStateProperty child, ModificationType modificationType) {

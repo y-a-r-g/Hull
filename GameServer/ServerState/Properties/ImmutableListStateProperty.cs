@@ -71,6 +71,10 @@ namespace Hull.GameServer.ServerState.Properties {
             _list = value;
         }
 
+        public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return new EmptyEnumerator<IStateProperty>();
+        }
+
         protected override void ModifyChildren(ModificationType modificationType) { }
     }
 }

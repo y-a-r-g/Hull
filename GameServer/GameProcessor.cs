@@ -26,9 +26,9 @@ namespace Hull.GameServer {
             new Dictionary<Type, RequestProcessorItem>();
 
         private readonly Queue<RequestQueueItem> _requestsQueue = new Queue<RequestQueueItem>();
-        private readonly TState _state;
         private readonly TRuntime _runtime;
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
+        private TState _state;
 
         /// <summary>
         /// When state was changes this event will be triggered. It happens once per tick if state changed. 
@@ -55,7 +55,7 @@ namespace Hull.GameServer {
 
             initialState.ModifyWithChildren(ModificationType.Added);
             initialState.EndUpdate();
-            _state = initialState;
+            State = initialState;
             _runtime = runtime;
 
 #if UNITY_5
@@ -85,7 +85,7 @@ namespace Hull.GameServer {
         }
 
         private void FixedUpdate() {
-            _state.BeginUpdate();
+            State.BeginUpdate();
             while (_requestsQueue.Count > 0) {
                 var item = _requestsQueue.Dequeue();
                 RequestProcessorItem processor;
@@ -95,7 +95,7 @@ namespace Hull.GameServer {
                 }
                 try {
                     processor.ProcessMethod.Invoke(
-                        processor.RequestProcessor, new object[] {item.Request, item.Player, _state, _runtime});
+                        processor.RequestProcessor, new object[] {item.Request, item.Player, State, _runtime});
                 }
                 catch (Exception ex) {
                     Debug.Log(ex);
@@ -105,12 +105,12 @@ namespace Hull.GameServer {
             var dt = Time.deltaTime;
 #endif
             foreach (var updater in _updaters) {
-                updater.Update(_state, _runtime, dt);
+                updater.Update(State, _runtime, dt);
             }
 
             _runtime.UpdateCoroutines();
 
-            _state.EndUpdate();
+            State.EndUpdate();
 
             SendStateChange();
         }
@@ -159,9 +159,23 @@ namespace Hull.GameServer {
         }
 
         private void SendStateChange() {
-            if (_state.IsModified) {
+            if (State.IsModified) {
                 if (StateChanged != null) {
-                    StateChanged(_state);
+                    StateChanged(State);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds current state. If state replaced <see cref="StateChanged"/> event will be triggered
+        /// </summary>
+        public TState State {
+            get { return _state; }
+            set {
+                var replaced = _state != null;
+                _state = value;
+                if (replaced) {
+                    SendStateChange();
                 }
             }
         }

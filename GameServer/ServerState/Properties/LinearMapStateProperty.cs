@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Hull.Collections;
 using Hull.GameServer.Interfaces;
@@ -14,18 +16,49 @@ namespace Hull.GameServer.ServerState.Properties {
         where TValue : IStateProperty {
         private readonly PlaceholderStatePropertyContainer _property;
 
+        private struct ValueEnumerator : IEnumerator<IStateProperty> {
+            private readonly IEnumerator<KeyValuePair<LinearMapId, TValue>> _enumerator;
+
+            public ValueEnumerator(IEnumerator<KeyValuePair<LinearMapId, TValue>> enumerator) : this() {
+                _enumerator = enumerator;
+            }
+
+            public void Dispose() {
+                _enumerator.Dispose();
+            }
+
+            public bool MoveNext() {
+                return _enumerator.MoveNext();
+            }
+
+            public void Reset() {
+                _enumerator.Reset();
+            }
+
+            public IStateProperty Current {
+                get { return _enumerator.Current.Value; }
+            }
+
+            object IEnumerator.Current {
+                get { return Current; }
+            }
+        }
+
         /// <summary>
         /// Creates empty property
         /// </summary>
         public LinearMapStateProperty() {
-            _property = new PlaceholderStatePropertyContainer();
-            _property.ModifyChildrenImpl = ModifyChildrenImpl;
+            _property = new PlaceholderStatePropertyContainer {
+                ModifyChildrenImpl = ModifyChildrenImpl,
+                GetChildrenEnumeratorImpl = GetChildrenEnumeratorImpl
+            };
         }
 
         protected LinearMapStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) {
             _property = (PlaceholderStatePropertyContainer)info.GetValue(
                 "_property", typeof(PlaceholderStatePropertyContainer));
             _property.ModifyChildrenImpl = ModifyChildrenImpl;
+            _property.GetChildrenEnumeratorImpl = GetChildrenEnumeratorImpl;
             BindItems();
         }
 
@@ -127,12 +160,28 @@ namespace Hull.GameServer.ServerState.Properties {
             _property.Modify(modificationType);
         }
 
+        public ulong UniqueId {
+            get { return _property.UniqueId; }
+        }
+
         /// <summary>
         /// Marks this property sa modified. Also marks all the items that Linear Map holds.
         /// </summary>
         /// <param name="modificationType"></param>
         public void ModifyWithChildren(ModificationType modificationType) {
             _property.ModifyWithChildren(modificationType);
+        }
+
+        public IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return _property.GetChildrenEnumerator();
+        }
+
+        private IEnumerator<IStateProperty> GetChildrenEnumeratorImpl() {
+            return new ValueEnumerator(GetEnumerator());
+        }
+
+        public IStateProperty GetChildProperty(ulong uniqueId) {
+            return _property.GetChildProperty(uniqueId);
         }
 
         private void ModifyChildrenImpl(ModificationType modificationType) {

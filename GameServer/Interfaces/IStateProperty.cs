@@ -26,5 +26,10 @@ namespace Hull.GameServer.Interfaces {
         /// </summary>
         /// <param name="modificationType">This value should be returned by <see cref="IStateProperty.ModificationType"/></param>
         void Modify(ModificationType modificationType);
+
+        /// <summary>
+        /// Unique id of the property
+        /// </summary>
+        ulong UniqueId { get; }
     }
 }

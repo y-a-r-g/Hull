@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Hull.Collections;
 using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
@@ -98,6 +99,10 @@ namespace Hull.GameServer.ServerState.Properties {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return new EmptyEnumerator<IStateProperty>();
         }
 
         protected override void ModifyChildren(ModificationType modificationType) { }

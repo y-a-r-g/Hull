@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Hull.Extensions;
@@ -7,7 +9,37 @@ using Hull.GameServer.Interfaces;
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
     public abstract class AbstractComplexStateProperty : AbstractStatePropertyContainer {
-        private FieldInfo[] _fields;
+        private readonly FieldInfo[] _fields;
+
+        private struct FieldsEnumerator : IEnumerator<IStateProperty> {
+            private readonly IEnumerator<FieldInfo> _enumerator;
+            private readonly AbstractComplexStateProperty _container;
+
+            public FieldsEnumerator(IEnumerator<FieldInfo> enumerator, AbstractComplexStateProperty container) {
+                _enumerator = enumerator;
+                _container = container;
+            }
+
+            public void Dispose() {
+                _enumerator.Dispose();
+            }
+
+            public bool MoveNext() {
+                return _enumerator.MoveNext();
+            }
+
+            public void Reset() {
+                _enumerator.Reset();
+            }
+
+            public IStateProperty Current {
+                get { return (IStateProperty)_enumerator.Current.GetValue(_container); }
+            }
+
+            object IEnumerator.Current {
+                get { return Current; }
+            }
+        }
 
         protected AbstractComplexStateProperty() {
             var type = GetType();
@@ -57,6 +89,10 @@ namespace Hull.GameServer.ServerState.Properties {
                     ModifyChild(field, modificationType);
                 }
             }
+        }
+
+        public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return new FieldsEnumerator(((IEnumerable<FieldInfo>)_fields).GetEnumerator(), this);
         }
     }
 }

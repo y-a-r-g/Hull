@@ -86,7 +86,7 @@ namespace Hull.Types {
         public int ToInt() {
             return _mask;
         }
-        
+
         public DirectionMask NextCW {
             get { return new DirectionMask(((_mask << 1) & 0xFF) | ((_mask >> 7) & 0x01)); }
         }

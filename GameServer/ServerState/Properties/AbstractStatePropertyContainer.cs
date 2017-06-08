@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
 
@@ -35,6 +36,19 @@ namespace Hull.GameServer.ServerState.Properties {
         public void ModifyWithChildren(ModificationType modificationType) {
             Modify(modificationType);
             ModifyChildren(modificationType);
+        }
+
+        public abstract IEnumerator<IStateProperty> GetChildrenEnumerator();
+
+        public virtual IStateProperty GetChildProperty(ulong uniqueId) {
+            using (var e = GetChildrenEnumerator()) {
+                while (e.MoveNext()) {
+                    if (e.Current.UniqueId == uniqueId) {
+                        return e.Current;
+                    }
+                }
+            }
+            return default(IStateProperty);
         }
 
         protected void ModifyChild(IStateProperty child, ModificationType modificationType) {

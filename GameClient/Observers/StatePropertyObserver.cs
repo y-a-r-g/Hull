@@ -19,7 +19,8 @@ namespace Hull.GameClient.Observers {
         /// </summary>
         public event ObservedStatePropertyChangedDelegate ObservedStatePropertyChanged;
 
-        private readonly TProperty _property;
+        private readonly ulong _propertyUniqueId;
+        private ulong[] _path;
 
         /// <summary>
         /// Creates an observer for given property
@@ -30,12 +31,16 @@ namespace Hull.GameClient.Observers {
             if (property == null) {
                 throw new ArgumentNullException("property");
             }
-            _property = property;
+            _propertyUniqueId = property.UniqueId;
         }
 
         public void OnStateChange(TState state) {
-            if (_property.IsModified) {
-                PropertyChanged(_property, state);
+            if (_path == null) {
+                _path = PropertyFinder.GetPropertyPath(state, _propertyUniqueId);
+            }
+            var property = PropertyFinder.FindProperty(state, _path);
+            if (property.IsModified) {
+                PropertyChanged((TProperty)property, state);
             }
         }
 
@@ -46,7 +51,7 @@ namespace Hull.GameClient.Observers {
         /// <param name="state"></param>
         protected virtual void PropertyChanged(TProperty property, TState state) {
             if (ObservedStatePropertyChanged != null) {
-                ObservedStatePropertyChanged(_property, state);
+                ObservedStatePropertyChanged(property, state);
             }
         }
     }

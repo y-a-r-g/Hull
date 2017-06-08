@@ -119,6 +119,10 @@ namespace Hull.GameServer.ServerState.Properties {
             return GetEnumerator();
         }
 
+        public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
+            return (IEnumerator<IStateProperty>)_value.GetEnumerator();
+        }
+
         protected override void ModifyChildren(ModificationType modificationType) {
             if (_value != null) {
                 for (var i = 0; i < _value.Length; i++) {
