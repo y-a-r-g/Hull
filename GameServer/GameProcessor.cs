@@ -186,5 +186,9 @@ namespace Hull.GameServer {
                 }
             }
         }
+
+        public IEnumerable<IPlayer<TState, TRuntime>> Players {
+            get { return _players; }
+        }
     }
 }

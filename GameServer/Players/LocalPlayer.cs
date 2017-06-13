@@ -28,7 +28,7 @@ namespace Hull.GameServer.Players {
             _playerId = playerId;
         }
 
-        public void OnStateChange(TState state) {
+        public virtual void OnStateChange(TState state) {
             if (StateChanged != null) {
                 StateChanged(state);
             }
@@ -55,6 +55,13 @@ namespace Hull.GameServer.Players {
                 throw new AccessViolationException("Player is not registered yet.");
             }
             _gameProcessor.ProcessRequest(request, this);
+        }
+
+        /// <summary>
+        /// Returns GameRuntime player currently registered in.
+        /// </summary>
+        public GameProcessor<TState, TServerRuntime> GameProcessor {
+            get { return _gameProcessor; }
         }
     }
 }
