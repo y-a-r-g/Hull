@@ -25,15 +25,13 @@ namespace Hull.GameServer {
         private readonly Dictionary<Type, RequestProcessorItem> _requestProcessors =
             new Dictionary<Type, RequestProcessorItem>();
 
-        private readonly Queue<RequestQueueItem> _requestsQueue = new Queue<RequestQueueItem>();
+        private readonly Queue<RequestQueueItem<TState, TRuntime>> _requestsQueue =
+            new Queue<RequestQueueItem<TState, TRuntime>>();
+
         private readonly TRuntime _runtime;
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
+        private readonly IPlayer<TState, TRuntime>[] _players;
         private TState _state;
-
-        /// <summary>
-        /// When state was changes this event will be triggered. It happens once per tick if state changed. 
-        /// </summary>
-        public event Action<TState> StateChanged;
 
 #if !UNITY_5
         private const float dt = 1f / 30;
@@ -42,21 +40,30 @@ namespace Hull.GameServer {
         /// <summary>
         /// Creates new processor with gigen state and runtime.
         /// </summary>
-        /// <param name="initialState"></param>
-        /// <param name="runtime"></param>
+        /// <param name="initialState">Initial game state</param>
+        /// <param name="players">List of players will be notified about state change</param>
+        /// <param name="runtime">Server runtime</param>
         /// <exception cref="ArgumentNullException">State or runtime is null</exception>
-        public GameProcessor(TState initialState, TRuntime runtime) {
+        public GameProcessor(TState initialState, IPlayer<TState, TRuntime>[] players, TRuntime runtime) {
             if (initialState == null) {
                 throw new ArgumentNullException("initialState");
+            }
+            if (players == null) {
+                throw new ArgumentNullException("players");
             }
             if (runtime == null) {
                 throw new ArgumentNullException("runtime");
             }
 
+            _players = players;
             initialState.ModifyWithChildren(ModificationType.Added);
             initialState.EndUpdate();
             State = initialState;
             _runtime = runtime;
+
+            foreach (var player in players) {
+                player.OnRegister(this);
+            }
 
 #if UNITY_5
             var updater = new GameObject().AddComponent<UnityUpdater>();
@@ -139,11 +146,11 @@ namespace Hull.GameServer {
         /// <param name="request"></param>
         /// <param name="player"></param>
         /// <exception cref="ArgumentNullException">Request is null</exception>
-        public void ProcessRequest(IRequest request, IPlayer player) {
+        public void ProcessRequest(IRequest request, IPlayer<TState, TRuntime> player) {
             if (request == null) {
                 throw new ArgumentNullException("request");
             }
-            _requestsQueue.Enqueue(new RequestQueueItem {Request = request, Player = player});
+            _requestsQueue.Enqueue(new RequestQueueItem<TState, TRuntime> {Request = request, Player = player});
         }
 
         /// <summary>
@@ -160,14 +167,14 @@ namespace Hull.GameServer {
 
         private void SendStateChange() {
             if (State.IsModified) {
-                if (StateChanged != null) {
-                    StateChanged(State);
+                foreach (var player in _players) {
+                    player.OnStateChange(State);
                 }
             }
         }
 
         /// <summary>
-        /// Holds current state. If state replaced <see cref="StateChanged"/> event will be triggered
+        /// Holds current state. If state replaced - all players will be notified about state change
         /// </summary>
         public TState State {
             get { return _state; }

@@ -8,7 +8,7 @@ namespace Hull.GameServer.Interfaces {
     /// <typeparam name="TState">Type of the server <see cref="State"/></typeparam>
     /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
     /// <typeparam name="TRequest">Processed request type</typeparam>
-    public interface IRequestProcessor<in TState, in TRuntime, in TRequest>
+    public interface IRequestProcessor<TState, TRuntime, TRequest>
         where TState : State
         where TRuntime : IServerRuntime
         where TRequest : IRequest {
@@ -19,6 +19,6 @@ namespace Hull.GameServer.Interfaces {
         /// <param name="player">Player that sent this request</param>
         /// <param name="state">Current server state</param>
         /// <param name="runtime">Server runtime</param>
-        void ProcessRequest(TRequest request, IPlayer player, TState state, TRuntime runtime);
+        void ProcessRequest(TRequest request, IPlayer<TState, TRuntime> player, TState state, TRuntime runtime);
     }
 }
