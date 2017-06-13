@@ -96,6 +96,7 @@ namespace Hull.GameServer.ServerState.Properties {
         /// <param name="id">Id of the item to remove</param>
         /// <returns>New id assiged to added item</returns>
         public override void Remove(LinearMapId id) {
+            Modify(ModificationType.Changed);
             var item = this[id];
             if (item != null) {
                 item.Container = null;
@@ -118,11 +119,11 @@ namespace Hull.GameServer.ServerState.Properties {
         public override TValue this[LinearMapId id] {
             get { return base[id]; }
             set {
+                Modify(ModificationType.Changed);
                 if (Contains(id)) {
                     var item = this[id];
                     item.Container = null;
                 }
-                Modify(ModificationType.Changed);
                 base[id] = value;
                 if (value != null) {
                     value.Container = this;
