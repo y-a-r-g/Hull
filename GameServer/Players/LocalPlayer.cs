@@ -52,7 +52,7 @@ namespace Hull.GameServer.Players {
                 throw new ArgumentNullException("request");
             }
             if (_gameProcessor == null) {
-                throw new AccessViolationException("Player is not registered yet.");
+                throw new InvalidOperationException("Player is not registered yet.");
             }
             _gameProcessor.ProcessRequest(request, this);
         }

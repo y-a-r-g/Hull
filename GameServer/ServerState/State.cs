@@ -66,11 +66,11 @@ namespace Hull.GameServer.ServerState {
         /// This ingormation will be whiped at the beginning of the next tick. 
         /// </summary>
         /// <param name="changeInfo"></param>
-        /// <exception cref="AccessViolationException"></exception>
+        /// <exception cref="InvalidOperationException">Trying to modify state in readonly phase</exception>
         /// <exception cref="ArgumentNullException"></exception>
         internal void AddChangeInfo(IStateChangeInfo changeInfo) {
             if (IsReadonly) {
-                throw new AccessViolationException();
+                throw new InvalidOperationException("State is readonly");
             }
             if (changeInfo == null) {
                 throw new ArgumentNullException("changeInfo");

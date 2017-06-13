@@ -91,11 +91,11 @@ namespace Hull.GameServer.ServerState.Properties {
         /// Marks property and all its parents as modified
         /// </summary>
         /// <param name="modificationType">Type of the applied modification</param>
-        /// <exception cref="AccessViolationException"></exception>
+        /// <exception cref="InvalidOperationException">Trying to modify state in readonly phase</exception>
         public void Modify(ModificationType modificationType) {
             if (CurrentState != null) {
                 if (CurrentState.IsReadonly) {
-                    throw new AccessViolationException();
+                    throw new InvalidOperationException("State is readonly");
                 }
 
                 UpdateId = CurrentState.UpdateId;
