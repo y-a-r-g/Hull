@@ -1,13 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Hull.GameServer.Interfaces;
+using Hull.GameServer.ServerState;
 
 namespace Hull.GameServer {
     /// <summary>
     /// Basic server runtime. Inherit this class to add runtime data to the server.
     /// </summary>
-    public class ServerRuntime : IServerRuntime {
+    public class ServerRuntime<TState> : IServerRuntime<TState> where TState : State {
         private readonly LinkedList<IEnumerator> _coroutines = new LinkedList<IEnumerator>();
+
+        public ServerRuntime(IEnumerable<IPlayer<TState>> players) {
+            Players = players;
+        }
 
         /// <summary>
         /// Starts a coroutine.
@@ -48,5 +53,7 @@ namespace Hull.GameServer {
                 }
             }
         }
+
+        public IEnumerable<IPlayer<TState>> Players { get; private set; }
     }
 }

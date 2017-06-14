@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
@@ -20,7 +21,7 @@ namespace Hull.GameClient.Observers {
         public event ObservedStatePropertyChangedDelegate ObservedStatePropertyChanged;
 
         private readonly ulong _propertyUniqueId;
-        private ulong[] _path;
+        private IEnumerable<ulong> _path;
 
         /// <summary>
         /// Creates an observer for given property

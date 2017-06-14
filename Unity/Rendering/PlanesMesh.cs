@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Hull.Unity.Rendering {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
+    [AddComponentMenu("Hull/Planes")]
     public class PlanesMesh : MonoBehaviour {
         public struct Item {
             internal Vector3[] Vertices;

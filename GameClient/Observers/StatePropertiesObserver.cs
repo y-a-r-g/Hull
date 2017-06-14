@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Hull.Extensions;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.Interfaces;
@@ -11,8 +12,8 @@ namespace Hull.GameClient.Observers {
     /// <typeparam name="TState">State type</typeparam>
     public class StatePropertiesObserver<TState> : IStateObserver<TState> where TState : State {
         private readonly ObserveMode _mode;
-        private readonly ulong[] _propertyUniqueIds;
-        private ulong[][] _paths;
+        private readonly IEnumerable<ulong> _propertyUniqueIds;
+        private IEnumerable<IEnumerable<ulong>> _paths;
 
         public delegate void ObservedStatePropertiesChangedDelegate(TState state);
 

@@ -2,9 +2,10 @@
 using UnityEngine;
 
 namespace Hull.Unity.Batching {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
-    [DisallowMultipleComponent]
+    [AddComponentMenu("Hull/Batchable")]
     public class Batchable : MonoBehaviour, IPoolable {
         private static CombinedMeshManager _combinedMeshManager;
         private CombinedMesh _combinedMesh;

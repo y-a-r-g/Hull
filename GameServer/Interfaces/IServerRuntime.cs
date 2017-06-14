@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using Hull.GameServer.ServerState;
 
 namespace Hull.GameServer.Interfaces {
     /// <summary>
@@ -6,7 +8,7 @@ namespace Hull.GameServer.Interfaces {
     /// Server runtime is shared between Request Processors and Updaterd.  
     /// <seealso cref="ServerRuntime"/>
     /// </summary>
-    public interface IServerRuntime {
+    public interface IServerRuntime<TState> where TState : State {
         /// <summary>
         /// New coroutine should be created when this method was called.
         /// </summary>
@@ -18,5 +20,7 @@ namespace Hull.GameServer.Interfaces {
         /// This method will be called by GameProcessor when coroutines should be updated.
         /// </summary>
         void UpdateCoroutines();
+        
+        IEnumerable<IPlayer<TState>> Players { get; }
     }
 }

@@ -2,8 +2,8 @@
 using Hull.GameServer.ServerState;
 
 namespace Hull.GameServer {
-    internal struct RequestQueueItem<TState, TRuntime> where TState : State where TRuntime : IServerRuntime {
-        public IPlayer<TState, TRuntime> Player;
+    internal struct RequestQueueItem<TState> where TState : State {
+        public IPlayer<TState> Player;
         public IRequest Request;
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Hull.Unity.Batching {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshFilter))]
+    [AddComponentMenu("")]
     internal class CombinedMesh : MonoBehaviour {
         private readonly List<Vector3> _vertices = new List<Vector3>();
         private readonly List<Vector3> _normals = new List<Vector3>();

@@ -21,16 +21,17 @@ namespace Hull.GameServer {
     /// </summary>
     /// <typeparam name="TState">Type of the server <see cref="State"/></typeparam>
     /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
-    public class GameProcessor<TState, TRuntime> where TState : State where TRuntime : IServerRuntime {
+    public class GameProcessor<TState, TRuntime> : IRequestReceiver<TState>
+        where TState : State
+        where TRuntime : IServerRuntime<TState> {
         private readonly Dictionary<Type, RequestProcessorItem> _requestProcessors =
             new Dictionary<Type, RequestProcessorItem>();
 
-        private readonly Queue<RequestQueueItem<TState, TRuntime>> _requestsQueue =
-            new Queue<RequestQueueItem<TState, TRuntime>>();
+        private readonly Queue<RequestQueueItem<TState>> _requestsQueue =
+            new Queue<RequestQueueItem<TState>>();
 
         private readonly TRuntime _runtime;
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
-        private readonly IPlayer<TState, TRuntime>[] _players;
         private TState _state;
 
 #if !UNITY_5
@@ -41,27 +42,22 @@ namespace Hull.GameServer {
         /// Creates new processor with gigen state and runtime.
         /// </summary>
         /// <param name="initialState">Initial game state</param>
-        /// <param name="players">List of players will be notified about state change</param>
         /// <param name="runtime">Server runtime</param>
         /// <exception cref="ArgumentNullException">State or runtime is null</exception>
-        public GameProcessor(TState initialState, IPlayer<TState, TRuntime>[] players, TRuntime runtime) {
+        public GameProcessor(TState initialState, TRuntime runtime) {
             if (initialState == null) {
                 throw new ArgumentNullException("initialState");
-            }
-            if (players == null) {
-                throw new ArgumentNullException("players");
             }
             if (runtime == null) {
                 throw new ArgumentNullException("runtime");
             }
 
-            _players = players;
             initialState.ModifyWithChildren(ModificationType.Added);
             initialState.EndUpdate();
             State = initialState;
             _runtime = runtime;
 
-            foreach (var player in players) {
+            foreach (var player in runtime.Players) {
                 player.OnRegister(this);
             }
 
@@ -146,11 +142,11 @@ namespace Hull.GameServer {
         /// <param name="request"></param>
         /// <param name="player"></param>
         /// <exception cref="ArgumentNullException">Request is null</exception>
-        public void ProcessRequest(IRequest request, IPlayer<TState, TRuntime> player) {
+        public void ProcessRequest(IRequest request, IPlayer<TState> player) {
             if (request == null) {
                 throw new ArgumentNullException("request");
             }
-            _requestsQueue.Enqueue(new RequestQueueItem<TState, TRuntime> {Request = request, Player = player});
+            _requestsQueue.Enqueue(new RequestQueueItem<TState> {Request = request, Player = player});
         }
 
         /// <summary>
@@ -167,7 +163,7 @@ namespace Hull.GameServer {
 
         private void SendStateChange() {
             if (State.IsModified) {
-                foreach (var player in _players) {
+                foreach (var player in _runtime.Players) {
                     player.OnStateChange(State);
                 }
             }
@@ -185,10 +181,6 @@ namespace Hull.GameServer {
                     SendStateChange();
                 }
             }
-        }
-
-        public IEnumerable<IPlayer<TState, TRuntime>> Players {
-            get { return _players; }
         }
     }
 }

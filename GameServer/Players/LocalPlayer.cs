@@ -9,9 +9,9 @@ namespace Hull.GameServer.Players {
     /// <summary>
     /// Local server is used to emulate client-server game localy.
     /// </summary>
-    public class LocalPlayer<TState, TServerRuntime> : IServerConnector<TState>, IPlayer<TState, TServerRuntime>
-        where TState : State where TServerRuntime : IServerRuntime {
-        private GameProcessor<TState, TServerRuntime> _gameProcessor;
+    public class LocalPlayer<TState> : IServerConnector<TState>, IPlayer<TState>
+        where TState : State  {
+        private IRequestReceiver<TState> _requestReceiver;
         private readonly LinearMapId _playerId;
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace Hull.GameServer.Players {
             get { return _playerId; }
         }
 
-        public void OnRegister(GameProcessor<TState, TServerRuntime> gameProcessor) {
-            _gameProcessor = gameProcessor;
+        public void OnRegister(IRequestReceiver<TState> requestReceiver) {
+            _requestReceiver = requestReceiver;
         }
 
         /// <summary>
@@ -51,17 +51,17 @@ namespace Hull.GameServer.Players {
             if (request == null) {
                 throw new ArgumentNullException("request");
             }
-            if (_gameProcessor == null) {
+            if (_requestReceiver == null) {
                 throw new InvalidOperationException("Player is not registered yet.");
             }
-            _gameProcessor.ProcessRequest(request, this);
+            _requestReceiver.ProcessRequest(request, this);
         }
 
         /// <summary>
-        /// Returns GameRuntime player currently registered in.
+        /// Returns <see cref="IRequestReceiver{TState}"/>  player currently registered in.
         /// </summary>
-        public GameProcessor<TState, TServerRuntime> GameProcessor {
-            get { return _gameProcessor; }
+        public IRequestReceiver<TState> RequestReceiver {
+            get { return _requestReceiver; }
         }
     }
 }

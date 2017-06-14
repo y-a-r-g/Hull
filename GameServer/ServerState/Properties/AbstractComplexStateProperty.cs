@@ -9,7 +9,7 @@ using Hull.GameServer.Interfaces;
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
     public abstract class AbstractComplexStateProperty : AbstractStatePropertyContainer {
-        private readonly FieldInfo[] _fields;
+        private readonly IEnumerable<FieldInfo> _fields;
 
         private struct FieldsEnumerator : IEnumerator<IStateProperty> {
             private readonly IEnumerator<FieldInfo> _enumerator;
@@ -92,7 +92,7 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
-            return new FieldsEnumerator(((IEnumerable<FieldInfo>)_fields).GetEnumerator(), this);
+            return new FieldsEnumerator(_fields.GetEnumerator(), this);
         }
     }
 }

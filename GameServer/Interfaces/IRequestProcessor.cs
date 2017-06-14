@@ -6,11 +6,11 @@ namespace Hull.GameServer.Interfaces {
     /// <seealso cref="GameProcessor{TState,TRuntime}.RegisterProcessor{TRequest}"/>
     /// </summary>
     /// <typeparam name="TState">Type of the server <see cref="State"/></typeparam>
-    /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
+    /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime{TState}"/></typeparam>
     /// <typeparam name="TRequest">Processed request type</typeparam>
     public interface IRequestProcessor<TState, TRuntime, TRequest>
         where TState : State
-        where TRuntime : IServerRuntime
+        where TRuntime : IServerRuntime<TState>
         where TRequest : IRequest {
         /// <summary>
         /// Implementation should contain reaction to the request. State modification is allowed here. Client will be notified about all the changes made with state. 
@@ -19,6 +19,6 @@ namespace Hull.GameServer.Interfaces {
         /// <param name="player">Player that sent this request</param>
         /// <param name="state">Current server state</param>
         /// <param name="runtime">Server runtime</param>
-        void ProcessRequest(TRequest request, IPlayer<TState, TRuntime> player, TState state, TRuntime runtime);
+        void ProcessRequest(TRequest request, IPlayer<TState> player, TState state, TRuntime runtime);
     }
 }

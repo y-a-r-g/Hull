@@ -13,7 +13,7 @@ namespace Hull.GameClient.Observers {
         /// <param name="state">State that holds property</param>
         /// <param name="propertyUniqueId">Unique id of the property to build path to</param>
         /// <returns>Path to the property</returns>
-        public static ulong[] GetPropertyPath(State state, ulong propertyUniqueId) {
+        public static IEnumerable<ulong> GetPropertyPath(State state, ulong propertyUniqueId) {
             var path = new LinkedList<ulong>();
             GetPropertyPath(state, propertyUniqueId, path);
             var result = new ulong[path.Count];
@@ -53,7 +53,7 @@ namespace Hull.GameClient.Observers {
         /// <param name="state">State that holds property</param>
         /// <param name="path">Path to the property</param>
         /// <returns>Property instance or null if not found</returns>
-        public static IStateProperty FindProperty(State state, ulong[] path) {
+        public static IStateProperty FindProperty(State state, IEnumerable<ulong> path) {
             var property = (IStateProperty)state;
             foreach (var uid in path) {
                 if (property == null) {
