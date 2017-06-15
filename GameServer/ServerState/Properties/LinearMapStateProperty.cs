@@ -68,11 +68,11 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         private void BindItems() {
-            for (var i = 0; i < _items.Count; i++) {
-                var item = _items[i];
+            for (var i = 0; i < Items.Count; i++) {
+                var item = Items[i];
                 if (item != null) {
                     item.Container = this;
-                    _items[i] = item;
+                    Items[i] = item;
                 }
             }
         }

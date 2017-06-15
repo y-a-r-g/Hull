@@ -6,11 +6,11 @@ using System.Runtime.Serialization;
 namespace Hull.Collections {
     [Serializable]
     public class LinearMap<T> : ILinearMap<T>, ISerializable {
-        protected readonly List<T> _items = new List<T>();
-        protected readonly LinkedList<int> _free = new LinkedList<int>();
+        protected readonly List<T> Items = new List<T>();
+        protected readonly LinkedList<int> Free = new LinkedList<int>();
 
-        protected struct Enumerator : IEnumerator<KeyValuePair<LinearMapId, T>> {
-            private int _index;
+        internal struct Enumerator : IEnumerator<KeyValuePair<LinearMapId, T>> {
+            internal int _index;
             private readonly LinearMap<T> _set;
 
             public Enumerator(LinearMap<T> set) {
@@ -21,8 +21,8 @@ namespace Hull.Collections {
             public void Dispose() { }
 
             public bool MoveNext() {
-                while (++_index < _set._items.Count) {
-                    if (!_set._free.Contains(_index)) {
+                while (++_index < _set.Items.Count) {
+                    if (!_set.Free.Contains(_index)) {
                         return true;
                     }
                 }
@@ -34,7 +34,7 @@ namespace Hull.Collections {
             }
 
             public KeyValuePair<LinearMapId, T> Current {
-                get { return new KeyValuePair<LinearMapId, T>(new LinearMapId(_index), _set._items[_index]); }
+                get { return new KeyValuePair<LinearMapId, T>(LinearMapId.NextFor(this), _set.Items[_index]); }
             }
 
             object IEnumerator.Current {
@@ -45,13 +45,13 @@ namespace Hull.Collections {
         public LinearMap() { }
 
         protected LinearMap(SerializationInfo info, StreamingContext context) {
-            _items = (List<T>)info.GetValue("items", typeof(List<T>));
-            _free = (LinkedList<int>)info.GetValue("free", typeof(LinkedList<int>));
+            Items = (List<T>)info.GetValue("items", typeof(List<T>));
+            Free = (LinkedList<int>)info.GetValue("free", typeof(LinkedList<int>));
         }
 
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
-            info.AddValue("items", _items, typeof(List<T>));
-            info.AddValue("free", _free, typeof(LinkedList<int>));
+            info.AddValue("items", Items, typeof(List<T>));
+            info.AddValue("free", Free, typeof(LinkedList<int>));
         }
 
         public virtual IEnumerator<KeyValuePair<LinearMapId, T>> GetEnumerator() {
@@ -63,12 +63,7 @@ namespace Hull.Collections {
         }
 
         public virtual LinearMapId FreeId {
-            get {
-                if (_free.Count > 0) {
-                    return new LinearMapId(_free.Last.Value);
-                }
-                return new LinearMapId(_items.Count);
-            }
+            get { return LinearMapId.NextFreeFor(Items, Free); }
         }
 
         public virtual LinearMapId Add(T item) {
@@ -78,19 +73,15 @@ namespace Hull.Collections {
         }
 
         public virtual void Remove(LinearMapId id) {
-            if ((id.Value < 0) || (id.Value > _items.Count) || _free.Contains(id.Value)) {
-                throw new ArgumentOutOfRangeException();
-            }
-            _items[id.Value] = default(T);
-            _free.AddFirst(id.Value);
+            id.RemoveFrom(Items, Free);
         }
 
         public virtual int Count {
-            get { return _items.Count - _free.Count; }
+            get { return Items.Count - Free.Count; }
         }
 
         public virtual int Capacity {
-            get { return _items.Count; }
+            get { return Items.Count; }
         }
 
         public virtual void Clear() {
@@ -100,12 +91,12 @@ namespace Hull.Collections {
         }
 
         public virtual bool Contains(LinearMapId id) {
-            return (id.Value >= 0) && (id.Value < _items.Count) && !_free.Contains(id.Value);
+            return id.ExistsIn(Items, Free);
         }
 
         public virtual bool TryGetValue(LinearMapId id, out T value) {
             if (Contains(id)) {
-                value = _items[id.Value];
+                value = id.GetFrom(Items, Free);
                 return true;
             }
             value = default(T);
@@ -117,20 +108,9 @@ namespace Hull.Collections {
                 if (!Contains(id)) {
                     throw new ArgumentOutOfRangeException();
                 }
-                return _items[id.Value];
+                return id.GetFrom(Items, Free);
             }
-            set {
-                while (id.Value >= _items.Count) {
-                    if (id.Value == _items.Count) {
-                        _items.Add(value);
-                        return;
-                    }
-                    _free.AddFirst(_items.Count);
-                    _items.Add(default(T));
-                }
-                _items[id.Value] = value;
-                _free.Remove(id.Value);
-            }
+            set { id.SetTo(Items, Free, value); }
         }
     }
 }

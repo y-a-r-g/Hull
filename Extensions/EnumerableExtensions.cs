@@ -567,7 +567,7 @@ namespace Hull.Extensions {
             using (var e = enumerable.GetEnumerator()) {
                 var i = 0;
                 while (e.MoveNext()) {
-                    if (i == index) {
+                    if (i++ == index) {
                         return e.Current;
                     }
                 }
