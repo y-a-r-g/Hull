@@ -13,6 +13,34 @@ namespace Hull.GameServer.ServerState.Properties {
     public class ArrayStateProperty<TValue> : AbstractStatePropertyContainer, IEnumerable<TValue>
         where TValue : IStateProperty {
         private TValue[] _value;
+        
+        private struct ItemsEnumerator : IEnumerator<IStateProperty> {
+            private readonly IEnumerator<TValue> _enumerator;
+
+            public ItemsEnumerator(IEnumerator<TValue> enumerator) {
+                _enumerator = enumerator;
+            }
+
+            public void Dispose() {
+                _enumerator.Dispose();
+            }
+
+            public bool MoveNext() {
+                return _enumerator.MoveNext();
+            }
+
+            public void Reset() {
+                _enumerator.Reset();
+            }
+
+            public IStateProperty Current {
+                get { return _enumerator.Current; }
+            }
+
+            object IEnumerator.Current {
+                get { return Current; }
+            }
+        }
 
         /// <summary>
         /// Creates an empty array property
@@ -120,7 +148,7 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
-            return (IEnumerator<IStateProperty>)_value.GetEnumerator();
+            return new ItemsEnumerator(((IEnumerable<TValue>)_value).GetEnumerator());
         }
 
         protected override void ModifyChildren(ModificationType modificationType) {
