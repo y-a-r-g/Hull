@@ -187,7 +187,7 @@ namespace Hull.Extensions {
                 return true;
             }
 
-            var list = enumerable as List<TItem>;
+            var list = enumerable as IList<TItem>;
             if (list != null) {
                 count = list.Count;
                 return true;
@@ -212,7 +212,7 @@ namespace Hull.Extensions {
                 }
             }
 
-            var list = enumerable as List<TItem>;
+            var list = enumerable as IList<TItem>;
             if (list == null) {
                 list = new List<TItem>();
                 enumerable.ForEach(item => list.Add(item));
@@ -555,6 +555,15 @@ namespace Hull.Extensions {
         /// <returns></returns>
         /// <exception cref="IndexOutOfRangeException"></exception>
         public static TItem At<TItem>(this IEnumerable<TItem> enumerable, int index) {
+            var array = enumerable as TItem[];
+            if (array != null) {
+                return array[index];
+            }
+            var list = enumerable as IList<TItem>;
+            if (list != null) {
+                return list[index];
+            }
+            
             using (var e = enumerable.GetEnumerator()) {
                 var i = 0;
                 while (e.MoveNext()) {
