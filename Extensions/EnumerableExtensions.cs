@@ -546,6 +546,26 @@ namespace Hull.Extensions {
             return default(TItem);
         }
 
+        /// <summary>
+        /// Returns item of the enumerable with specified index
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="index"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static TItem At<TItem>(this IEnumerable<TItem> enumerable, int index) {
+            using (var e = enumerable.GetEnumerator()) {
+                var i = 0;
+                while (e.MoveNext()) {
+                    if (i == index) {
+                        return e.Current;
+                    }
+                }
+            }
+            throw new IndexOutOfRangeException();
+        }
+
         #endregion
     }
 }
