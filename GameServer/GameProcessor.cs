@@ -62,7 +62,7 @@ namespace Hull.GameServer {
             }
 
 #if UNITY_5
-            var updater = new GameObject().AddComponent<UnityUpdater>();
+            var updater = new GameObject("Hull.UnityUpdater").AddComponent<UnityUpdater>();
             updater.StartAction = Start;
             updater.FixedUpdateAction = FixedUpdate;
 #else
