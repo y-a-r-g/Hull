@@ -66,12 +66,6 @@ namespace Hull.Collections {
             get { return LinearMapId.NextFreeFor(Items, Free); }
         }
 
-        public virtual LinearMapId Add(T item) {
-            var id = FreeId;
-            this[id] = item;
-            return id;
-        }
-
         public virtual void Remove(LinearMapId id) {
             id.RemoveFrom(Items, Free);
         }

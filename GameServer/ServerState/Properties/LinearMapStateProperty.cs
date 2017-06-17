@@ -78,19 +78,6 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         /// <summary>
-        /// Adds new items. This property will be marked as <value>Changed</value>, added property will be marked as <value>Added</value>.
-        /// </summary>
-        /// <param name="item">Item to add</param>
-        /// <returns>New id assiged to added item</returns>
-        public override LinearMapId Add(TValue item) {
-            Modify(ModificationType.Changed);
-            if (item != null) {
-                item.Container = this;
-            }
-            return base.Add(item);
-        }
-
-        /// <summary>
         /// Removes an item with given id. This property will be marked as <value>Changed</value>, removed property will be marked as <value>Removed</value>.
         /// </summary>
         /// <param name="id">Id of the item to remove</param>

@@ -5,7 +5,6 @@ namespace Hull.Collections {
         LinearMapId FreeId { get; }
         int Count { get; }
         int Capacity { get; }
-        LinearMapId Add(T item);
         void Remove(LinearMapId id);
         bool Contains(LinearMapId id);
         T this[LinearMapId id] { get; set; }
