@@ -32,13 +32,22 @@ namespace Hull.Unity.PropertyInjector {
     public class PropertyInjectorCore : MonoBehaviour {
         public static string FileName = "Hull.PropertyInjector.config";
 
+        public static event Action PropertiesInjected;
+
         private static string _spreadsheetKey;
 
         public static string SpreadsheetKey {
             get { return _spreadsheetKey; }
             set {
                 _spreadsheetKey = value;
-                ReinjectAll();
+                if (_spreadsheetKey != null) {
+                    if (!_instance) {
+                        Instance.GetHashCode();
+                    }
+                    else {
+                        Instance.StartCoroutine(Instance.DownloadCsv(_spreadsheetKey));
+                    }
+                }
             }
         }
 
@@ -103,7 +112,7 @@ namespace Hull.Unity.PropertyInjector {
                 _values = new Dictionary<string, OrderedDictionary>();
             }
 
-            Debug.Log("Propery Injector intialized with cache");
+            ReinjectAll();
         }
 
         private IEnumerator DownloadCsv(string spreadsheetKey) {
@@ -145,14 +154,14 @@ namespace Hull.Unity.PropertyInjector {
                 SerializationUtils.BinaryFormatter.Serialize(stream, _values);
             }
 
-            Debug.Log(string.Format("Propery Injector intialized with {0} spreadsheet", SpreadsheetKey));
-
             ReinjectAll();
         }
 
         public static void ReinjectAll() {
             FindObjectsOfType<PropertyInjector>().ForEach(PropertyInjector.Inject);
-            Debug.Log("All properties was injected");
+            if (PropertiesInjected != null) {
+                PropertiesInjected();
+            }
         }
 
         public static void InitializeField(FieldInfo fieldInfo, object component) {
