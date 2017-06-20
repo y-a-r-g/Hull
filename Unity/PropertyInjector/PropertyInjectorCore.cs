@@ -157,6 +157,10 @@ namespace Hull.Unity.PropertyInjector {
             ReinjectAll();
         }
 
+        public static void UpdateSpreadsheet() {
+            Instance.StartCoroutine(Instance.DownloadCsv(_spreadsheetKey));
+        }
+
         public static void ReinjectAll() {
             FindObjectsOfType<PropertyInjector>().ForEach(PropertyInjector.Inject);
             if (PropertiesInjected != null) {
