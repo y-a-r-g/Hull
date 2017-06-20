@@ -553,7 +553,7 @@ namespace Hull.Extensions {
         /// <param name="index"></param>
         /// <typeparam name="TItem"></typeparam>
         /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static TItem At<TItem>(this IEnumerable<TItem> enumerable, int index) {
             var array = enumerable as TItem[];
             if (array != null) {
@@ -572,7 +572,84 @@ namespace Hull.Extensions {
                     }
                 }
             }
-            throw new IndexOutOfRangeException();
+            throw new ArgumentOutOfRangeException();
+        }
+        
+        #endregion
+
+        #region First/Last
+
+        /// <summary>
+        /// Returns first element of the enumerble
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static TItem First<TItem>(this IEnumerable<TItem> enumerable) {
+            return enumerable.At(0);
+        }
+        
+        /// <summary>
+        /// Returns first element of the enumerable. If not found - returns default value for element type
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static TItem FirstOrDefault<TItem>(this IEnumerable<TItem> enumerable) {
+            try {
+                return enumerable.At(0);
+            }
+            catch (ArgumentOutOfRangeException) {
+                return default(TItem);
+            }
+        }
+        
+        /// <summary>
+        /// Returns last element of the enumerble
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static TItem Last<TItem>(this IEnumerable<TItem> enumerable) {
+            var array = enumerable as TItem[];
+            if (array != null) {
+                return array[array.Length - 1];
+            }
+            var list = enumerable as IList<TItem>;
+            if (list != null) {
+                return list[list.Count - 1];
+            }
+
+            var last = default(TItem);
+            using (var e = enumerable.GetEnumerator()) {
+                var found = false;
+                while (e.MoveNext()) {
+                    last = e.Current;
+                    found = true;
+                }
+
+                if (!found) {
+                    throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return last;
+        }
+
+        /// <summary>
+        /// Returns last element of the enumerable. If not found - returns default value for element type
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static TItem LastOrDefault<TItem>(this IEnumerable<TItem> enumerable) {
+            try {
+                return enumerable.Last();
+            }
+            catch (ArgumentOutOfRangeException) {
+                return default(TItem);
+            }
         }
 
         #endregion
