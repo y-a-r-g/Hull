@@ -7,6 +7,8 @@ namespace Hull.Types {
     [Serializable]
     public struct DirectionMask : ISerializable {
         private readonly int _mask;
+        
+        public readonly static DirectionMask Empty = new DirectionMask(0);
 
         public DirectionMask(DirectionMask mask = default(DirectionMask)) : this(mask._mask) { }
 
