@@ -6,7 +6,6 @@ using System.Collections.Generic;
 namespace Hull.Extensions {
     public static class EnumerableExtensions {
         #region ForEach
-
         /// <summary>
         /// Iterator used in ForeEach loop
         /// </summary>
@@ -68,11 +67,9 @@ namespace Hull.Extensions {
                 }
             }
         }
-
         #endregion
 
         #region Map
-
         /// <summary>
         /// Iterator used in Map loop
         /// </summary>
@@ -89,9 +86,7 @@ namespace Hull.Extensions {
         /// <typeparam name="TInput"></typeparam>
         /// <typeparam name="TOutput"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<TOutput> Map<TInput, TOutput>(
-                this IEnumerable<TInput> enumerable, MapIterator<TInput, TOutput> iterator
-            ) {
+        public static IEnumerable<TOutput> Map<TInput, TOutput>(this IEnumerable<TInput> enumerable, MapIterator<TInput, TOutput> iterator) {
             int count;
 
             if (enumerable.CountFast(out count)) {
@@ -122,9 +117,7 @@ namespace Hull.Extensions {
         /// <typeparam name="TInput"></typeparam>
         /// <typeparam name="TOutput"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<TOutput> Map<TInput, TOutput>(
-                IEnumerable<TInput> enumerable, MapIndexedIterator<TInput, TOutput> iterator
-            ) {
+        public static IEnumerable<TOutput> Map<TInput, TOutput>(IEnumerable<TInput> enumerable, MapIndexedIterator<TInput, TOutput> iterator) {
             int count;
 
             if (enumerable.CountFast(out count)) {
@@ -137,11 +130,9 @@ namespace Hull.Extensions {
             enumerable.ForEach((item, index) => list.Add(iterator(item, index)));
             return list;
         }
-
         #endregion
 
         #region Utils
-
         /// <summary>
         /// Returns amount of items in enumerable. Note: if enumerable is not an array or list - it wil be enumerated to calculate length
         /// </summary>
@@ -242,11 +233,9 @@ namespace Hull.Extensions {
             enumerable.ForEach(item => list.Add(item));
             return list;
         }
-
         #endregion
 
         #region Filter
-
         /// <summary>
         /// Iterator used in For loop
         /// </summary>
@@ -261,9 +250,7 @@ namespace Hull.Extensions {
         /// <param name="iterator"></param>
         /// <typeparam name="TItem"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<TItem> Filter<TItem>(
-                this IEnumerable<TItem> enumerable, FilterIterator<TItem> iterator
-            ) {
+        public static IEnumerable<TItem> Filter<TItem>(this IEnumerable<TItem> enumerable, FilterIterator<TItem> iterator) {
             var result = new List<TItem>();
             enumerable.ForEach(
                 item => {
@@ -290,9 +277,7 @@ namespace Hull.Extensions {
         /// <param name="iterator"></param>
         /// <typeparam name="TItem"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<TItem> Filter<TItem>(
-                this IEnumerable<TItem> enumerable, FilterIndexedIterator<TItem> iterator
-            ) {
+        public static IEnumerable<TItem> Filter<TItem>(this IEnumerable<TItem> enumerable, FilterIndexedIterator<TItem> iterator) {
             var result = new List<TItem>();
             enumerable.ForEach(
                 (item, index) => {
@@ -303,11 +288,9 @@ namespace Hull.Extensions {
 
             return result;
         }
-
         #endregion
 
         #region Reduce/Accumulate
-
         /// <summary>
         /// Iterator used in Reduce loop
         /// </summary>
@@ -327,10 +310,10 @@ namespace Hull.Extensions {
         /// <typeparam name="TAccumulator"></typeparam>
         /// <returns>Result of the last iterator call</returns>
         public static TAccumulator Reduce<TItem, TAccumulator>(
-                this IEnumerable<TItem> enumerable,
-                TAccumulator accumulator,
-                ReduceIterator<TItem, TAccumulator> iterator
-            ) {
+            this IEnumerable<TItem> enumerable,
+            TAccumulator accumulator,
+            ReduceIterator<TItem, TAccumulator> iterator
+        ) {
             enumerable.ForEach(item => accumulator = iterator(accumulator, item));
             return accumulator;
         }
@@ -354,10 +337,7 @@ namespace Hull.Extensions {
         /// <typeparam name="TItem"></typeparam>
         /// <typeparam name="TAccumulator"></typeparam>
         /// <returns>Result of the last iterator call</returns>
-        public static TAccumulator Reduce<TItem, TAccumulator>(
-                this IEnumerable<TItem> enumerable, TAccumulator accumulator,
-                ReduceIndexedIterator<TItem, TAccumulator> iterator
-            ) {
+        public static TAccumulator Reduce<TItem, TAccumulator>(this IEnumerable<TItem> enumerable, TAccumulator accumulator, ReduceIndexedIterator<TItem, TAccumulator> iterator) {
             enumerable.ForEach((item, index) => accumulator = iterator(accumulator, item, index));
             return accumulator;
         }
@@ -380,10 +360,7 @@ namespace Hull.Extensions {
         /// <typeparam name="TItem"></typeparam>
         /// <typeparam name="TAccumulator"></typeparam>
         /// <returns></returns>
-        public static TAccumulator Accumulate<TItem, TAccumulator>(
-                this IEnumerable<TItem> enumerable, TAccumulator accumulator,
-                AccumulateIterator<TItem, TAccumulator> iterator
-            ) {
+        public static TAccumulator Accumulate<TItem, TAccumulator>(this IEnumerable<TItem> enumerable, TAccumulator accumulator, AccumulateIterator<TItem, TAccumulator> iterator) {
             enumerable.ForEach(item => iterator(accumulator, item));
             return accumulator;
         }
@@ -396,8 +373,7 @@ namespace Hull.Extensions {
         /// <param name="index"></param>
         /// <typeparam name="TItem"></typeparam>
         /// <typeparam name="TAccumulator"></typeparam>
-        public delegate void AccumulateIndexedIterator<TItem, TAccumulator>(
-            TAccumulator accumulator, TItem element, int index);
+        public delegate void AccumulateIndexedIterator<TItem, TAccumulator>(TAccumulator accumulator, TItem element, int index);
 
         /// <summary>
         /// Iterates over collection passing same accumulator instance to every iterator call
@@ -408,18 +384,13 @@ namespace Hull.Extensions {
         /// <typeparam name="TItem"></typeparam>
         /// <typeparam name="TAccumulator"></typeparam>
         /// <returns></returns>
-        public static TAccumulator Accumulate<TItem, TAccumulator>(
-                this IEnumerable<TItem> enumerable, TAccumulator accumulator,
-                AccumulateIndexedIterator<TItem, TAccumulator> iterator
-            ) {
+        public static TAccumulator Accumulate<TItem, TAccumulator>(this IEnumerable<TItem> enumerable, TAccumulator accumulator, AccumulateIndexedIterator<TItem, TAccumulator> iterator) {
             enumerable.ForEach((item, index) => iterator(accumulator, item, index));
             return accumulator;
         }
-
         #endregion
 
         #region IndexOf
-
         /// <summary>
         /// Returns index of given element in the enumerable
         /// </summary>
@@ -434,8 +405,10 @@ namespace Hull.Extensions {
                     if ((item == null) ? (e.Current == null) : item.Equals(e.Current)) {
                         return index;
                     }
+
                     index++;
                 }
+
                 return -1;
             }
         }
@@ -454,8 +427,10 @@ namespace Hull.Extensions {
                     if (iterator(e.Current)) {
                         return index;
                     }
+
                     index++;
                 }
+
                 return -1;
             }
         }
@@ -477,6 +452,7 @@ namespace Hull.Extensions {
                     }
                     index++;
                 }
+
                 return result;
             }
         }
@@ -498,14 +474,13 @@ namespace Hull.Extensions {
                     }
                     index++;
                 }
+
                 return result;
             }
         }
-
         #endregion
 
         #region Find/Contains
-
         /// <summary>
         /// Returns <value>true</value> if item found in enumerable
         /// </summary>
@@ -543,6 +518,7 @@ namespace Hull.Extensions {
                     }
                 }
             }
+
             return default(TItem);
         }
 
@@ -559,11 +535,12 @@ namespace Hull.Extensions {
             if (array != null) {
                 return array[index];
             }
+
             var list = enumerable as IList<TItem>;
             if (list != null) {
                 return list[index];
             }
-            
+
             using (var e = enumerable.GetEnumerator()) {
                 var i = 0;
                 while (e.MoveNext()) {
@@ -572,13 +549,12 @@ namespace Hull.Extensions {
                     }
                 }
             }
+
             throw new ArgumentOutOfRangeException();
         }
-        
         #endregion
 
         #region First/Last
-
         /// <summary>
         /// Returns first element of the enumerble
         /// </summary>
@@ -588,7 +564,7 @@ namespace Hull.Extensions {
         public static TItem First<TItem>(this IEnumerable<TItem> enumerable) {
             return enumerable.At(0);
         }
-        
+
         /// <summary>
         /// Returns first element of the enumerable. If not found - returns default value for element type
         /// </summary>
@@ -603,7 +579,7 @@ namespace Hull.Extensions {
                 return default(TItem);
             }
         }
-        
+
         /// <summary>
         /// Returns last element of the enumerble
         /// </summary>
@@ -616,6 +592,7 @@ namespace Hull.Extensions {
             if (array != null) {
                 return array[array.Length - 1];
             }
+
             var list = enumerable as IList<TItem>;
             if (list != null) {
                 return list[list.Count - 1];
@@ -651,7 +628,78 @@ namespace Hull.Extensions {
                 return default(TItem);
             }
         }
+        #endregion
 
+        #region Any/All
+        /// <summary>
+        /// Returns <value>true</value> if iterator returned <value>true</value> at least for one item
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="iterator"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static bool Any<TItem>(this IEnumerable<TItem> enumerable, FilterIterator<TItem> iterator) {
+            foreach (var item in enumerable) {
+                if (iterator(item)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns <value>true</value> if iterator returned <value>true</value> at least for one item
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="iterator"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static bool Any<TItem>(this IEnumerable<TItem> enumerable, FilterIndexedIterator<TItem> iterator) {
+            var index = 0;
+            foreach (var item in enumerable) {
+                if (iterator(item, index++)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns <value>true</value> if iterator returned <value>true</value> for all items
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="iterator"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static bool All<TItem>(this IEnumerable<TItem> enumerable, FilterIterator<TItem> iterator) {
+            foreach (var item in enumerable) {
+                if (!iterator(item)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns <value>true</value> if iterator returned <value>true</value> for all items
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="iterator"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static bool All<TItem>(this IEnumerable<TItem> enumerable, FilterIndexedIterator<TItem> iterator) {
+            var index = 0;
+            foreach (var item in enumerable) {
+                if (iterator(item, index++)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         #endregion
     }
 }
