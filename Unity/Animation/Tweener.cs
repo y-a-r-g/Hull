@@ -14,6 +14,11 @@ namespace Hull.Unity.Animation {
         /// </summary>
         /// <param name="progress">Tweener progress value in range [0,1]</param>
         public delegate bool InterruptableTweenerUpdate(float progress);
+        
+        /// <summary>
+        /// Delegate for the infinity tweenner function. If returns false - tweener will be interrupted.
+        /// </summary>
+        public delegate bool InfinityTweenerUpdate();
 
         /// <summary>
         /// Delegate for easing function. Should return progress in range [0,1]
@@ -28,6 +33,7 @@ namespace Hull.Unity.Animation {
         private readonly float _duration;
         private readonly TweenerUpdate _updateFunction;
         private readonly InterruptableTweenerUpdate _interruptableTweenerUpdate;
+        private readonly InfinityTweenerUpdate _infinityTweenerUpdate;
         private readonly EasingFunction _easing;
         private float _time;
 
@@ -37,6 +43,7 @@ namespace Hull.Unity.Animation {
         /// <param name="duration">Duration of the tweener in seconds</param>
         /// <param name="update">Update function will be called every frame with progress in range [0,1]</param>
         /// <param name="easing">Easing function. <seealso cref="EasingFunction"/>></param>
+        /// <exception cref="ArgumentOutOfRangeException">duration should have positive value</exception>
         public Tweener(float duration, TweenerUpdate update, EasingFunction easing = null) : this(duration, easing) {
             _updateFunction = update;
         }
@@ -46,12 +53,17 @@ namespace Hull.Unity.Animation {
         /// <param name="duration">Duration of the tweener in seconds</param>
         /// <param name="update">Update function will be called every frame with progress in range [0,1]. If returns false - tweener will be interrupted</param>
         /// <param name="easing">Easing function. <seealso cref="EasingFunction"/>></param>
+        /// <exception cref="ArgumentOutOfRangeException">duration should have positive value</exception>
         public Tweener(float duration, InterruptableTweenerUpdate update, EasingFunction easing = null) : this(duration, easing) {
             _interruptableTweenerUpdate = update;
         }
 
+        public Tweener(InfinityTweenerUpdate update) {
+            _infinityTweenerUpdate = update;
+        }
+
         private Tweener(float duration, EasingFunction easing) {
-            if (duration < 0) {
+            if (duration <= 0) {
                 throw new ArgumentOutOfRangeException("duration");
             }
 
@@ -65,6 +77,10 @@ namespace Hull.Unity.Animation {
 
         public override bool keepWaiting {
             get {
+                if (_infinityTweenerUpdate != null) {
+                    return _infinityTweenerUpdate();
+                }
+
                 var currentTime = _easing(_time, 0, 1, _duration);
 
                 if (_updateFunction != null) {
