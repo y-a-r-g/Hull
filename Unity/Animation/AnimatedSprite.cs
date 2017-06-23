@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Hull.Unity.Animation {
     [RequireComponent(typeof(SpriteRenderer))]
@@ -62,6 +63,10 @@ namespace Hull.Unity.Animation {
             get { return !Finished; }
         }
 
+        public int? StartFrame;
+
+        public int? EndFrame;
+
         public CustomYieldInstruction Play() {
             return Play(_mode);
         }
@@ -88,6 +93,24 @@ namespace Hull.Unity.Animation {
             Finished = true;
         }
 
+        public void Rewind() {
+            Time = 0;
+            if ((_frames == null) || (_frames.Length == 0)) {
+                return;
+            }
+            
+            var startFrame = Mathf.Max(StartFrame.HasValue ? StartFrame.Value : int.MinValue, 0);
+            var endFrame = Mathf.Min(EndFrame.HasValue ? EndFrame.Value : int.MaxValue, _frames.Length - 1);
+            if (startFrame > endFrame) {
+                startFrame = endFrame;
+            }
+
+            var frame = startFrame;
+            if (_spriteRenderer.sprite != _frames[frame]) {
+                _spriteRenderer.sprite = _frames[frame];
+            }
+        }
+
         protected virtual void Awake() {
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
@@ -97,30 +120,39 @@ namespace Hull.Unity.Animation {
                 return;
             }
 
+            var startFrame = Mathf.Max(StartFrame.HasValue ? StartFrame.Value : int.MinValue, 0);
+            var endFrame = Mathf.Min(EndFrame.HasValue ? EndFrame.Value : int.MaxValue, _frames.Length - 1);
+            if (startFrame > endFrame) {
+                var t = startFrame;
+                startFrame = endFrame;
+                endFrame = t;
+            }
+
             Time += UnityEngine.Time.deltaTime;
             var frame = Mathf.RoundToInt(Time * _framesPerSecond);
-            if ((_mode == PlayMode.LoopReversed) || (_mode == PlayMode.OnceReversed)) {
-                frame = _frames.Length - frame - 1;
-            }
 
             bool finished = false;
             switch (_mode) {
                 case PlayMode.Once:
-                    finished = frame >= _frames.Length;
-                    frame = Mathf.Min(frame, _frames.Length);
+                    frame += startFrame;
+                    finished = frame > endFrame;
+                    frame = Mathf.Min(frame, endFrame);
                     break;
                 case PlayMode.Loop:
-                    frame = frame % _frames.Length;
+                    frame = frame % (endFrame - startFrame + 1);
+                    frame += startFrame;
                     break;
                 case PlayMode.OnceReversed:
-                    finished = frame < 0;
-                    frame = 0;
+                    frame = endFrame - frame;
+                    finished = frame < startFrame;
+                    frame = Math.Max(frame, startFrame);
                     break;
                 case PlayMode.LoopReversed:
-                    frame = frame % _frames.Length;
+                    frame = frame % (endFrame - startFrame + 1);
                     if (frame < 0) {
-                        frame += _frames.Length;
+                        frame += endFrame - startFrame + 1;
                     }
+                    frame += startFrame;
                     break;
             }
 
