@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Hull.Unity.Animation {
@@ -12,7 +13,7 @@ namespace Hull.Unity.Animation {
             }
 
             public override bool keepWaiting {
-                get { return !_sprite.IsPlaying; }
+                get { return _sprite.IsPlaying; }
             }
         }
 
@@ -67,11 +68,11 @@ namespace Hull.Unity.Animation {
 
         public int? EndFrame;
 
-        public CustomYieldInstruction Play() {
+        public IEnumerator Play() {
             return Play(_mode);
         }
 
-        public CustomYieldInstruction Play(PlayMode mode) {
+        public IEnumerator Play(PlayMode mode) {
             _paused = false;
             Time = 0;
             Finished = false;
