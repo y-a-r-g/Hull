@@ -74,6 +74,7 @@ namespace Hull.Unity.Animation {
 
         public IEnumerator Play(PlayMode mode) {
             _paused = false;
+            _mode = mode;
             Time = 0;
             Finished = false;
 
