@@ -60,6 +60,17 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         /// <summary>
+        /// Changes property value only if nullable has value
+        /// </summary>
+        /// <param name="value">New property value</param>
+        /// <typeparam name="TStructValue"></typeparam>
+        public void Set<TStructValue>(TStructValue? value) where TStructValue : struct, TValue {
+            if (value.HasValue) {
+                Set(value.Value);
+            }
+        }
+
+        /// <summary>
         /// Calls <code>ToString</code> method of the value that property currently holds 
         /// </summary>
         /// <returns>String representation of the value</returns>

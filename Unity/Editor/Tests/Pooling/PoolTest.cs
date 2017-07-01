@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Hull.Editor.Tests.Pooling {
+namespace Hull.Unity.Editor.Tests.Pooling {
     [TestFixture]
     public class PoolTest {
         private static bool instantiateCalled;
