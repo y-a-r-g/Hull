@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Hull.Collections {
     [Serializable]
@@ -19,7 +20,13 @@ namespace Hull.Collections {
         }
 
         public override bool Equals(object obj) {
-            return (obj != null) && (_value == ((LinearMapId)obj)._value);
+            if (obj == null) {
+                return false;
+            }
+            if (obj.GetType() != typeof(LinearMapId)) {
+                return false;
+            }
+            return _value == ((LinearMapId)obj)._value;
         }
 
         public override int GetHashCode() {
@@ -64,6 +71,10 @@ namespace Hull.Collections {
 
         internal static LinearMapId NextFor<T>(LinearMap<T>.Enumerator e) {
             return new LinearMapId(e._index);
+        }
+
+        public override string ToString() {
+            return _value.ToString();
         }
     }
 }

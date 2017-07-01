@@ -13,9 +13,17 @@ namespace Hull.Unity.Serialization {
                     _formatter = new BinaryFormatter();
                     var surrogateSelector = new SurrogateSelector();
                     surrogateSelector.AddSurrogate(
+                        typeof(Vector2),
+                        new StreamingContext(StreamingContextStates.All),
+                        new Vector2SerializationSurrogate());
+                    surrogateSelector.AddSurrogate(
                         typeof(Vector3),
                         new StreamingContext(StreamingContextStates.All),
                         new Vector3SerializationSurrogate());
+                    surrogateSelector.AddSurrogate(
+                        typeof(Vector4),
+                        new StreamingContext(StreamingContextStates.All),
+                        new Vector4SerializationSurrogate());
                     surrogateSelector.AddSurrogate(
                         typeof(Quaternion),
                         new StreamingContext(StreamingContextStates.All),

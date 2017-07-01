@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using Hull.Collections;
 using Hull.GameClient.Interfaces;
 using Hull.GameClient.Observers;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
+using Hull.Unity.Serialization;
 
 namespace Hull.GameServer.Players {
     /// <summary>
@@ -13,6 +15,8 @@ namespace Hull.GameServer.Players {
         where TState : State  {
         private IRequestReceiver<TState> _requestReceiver;
         private readonly LinearMapId _playerId;
+        private readonly bool _cloneState;
+        private Stream _serializationStream;
 
         /// <summary>
         /// Triggered whrn state was changed. Use <seealso cref="StateObserver{TState}"/> to handle it.
@@ -24,12 +28,22 @@ namespace Hull.GameServer.Players {
         /// </summary>
         /// <param name="playerId"></param>
         /// <exception cref="ArgumentNullException">Game Processor is null</exception>
-        public LocalPlayer(LinearMapId playerId) {
+        public LocalPlayer(LinearMapId playerId, bool cloneState = false) {
             _playerId = playerId;
+            _cloneState = cloneState;
+            if (_cloneState) {
+                _serializationStream = new MemoryStream();
+            }
         }
 
         public virtual void OnStateChange(TState state) {
             if (StateChanged != null) {
+                if (_cloneState) {
+                    _serializationStream.Seek(0, SeekOrigin.Begin);
+                    SerializationUtils.BinaryFormatter.Serialize(_serializationStream, state);
+                    _serializationStream.Seek(0, SeekOrigin.Begin);
+                    state = (TState)SerializationUtils.BinaryFormatter.Deserialize(_serializationStream);
+                }
                 StateChanged(state);
             }
         }
