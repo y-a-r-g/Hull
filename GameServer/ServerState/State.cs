@@ -26,7 +26,16 @@ namespace Hull.GameServer.ServerState {
             Container = this;
         }
 
-        protected State(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected State(SerializationInfo info, StreamingContext context) : base(info, context) {
+            _changeInfo = (List<IStateChangeInfo>)info.GetValue("_changeInfo", typeof(List<IStateChangeInfo>));
+            _stateUpdateId = (ulong)info.GetValue("_stateUpdateId", typeof(ulong));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+            base.GetObjectData(info, context);
+            info.AddValue("_changeInfo", _changeInfo, typeof(List<IStateChangeInfo>));
+            info.AddValue("_stateUpdateId", _stateUpdateId, typeof(ulong));
+        }
 
         /// <summary>
         /// This field holds server's tick number from the start of the game. Note: it can be used aoly to compare to other UpdateId's since it can be reset at any time. 
