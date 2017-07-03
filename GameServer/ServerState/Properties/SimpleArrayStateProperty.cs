@@ -12,7 +12,7 @@ namespace Hull.GameServer.ServerState.Properties {
     /// <typeparam name="TValue">Type of value array</typeparam>
     [Serializable]
     public class SimpleArrayStateProperty<TValue> : AbstractStatePropertyContainer,
-                                                    IEnumerable<TValue>
+        IEnumerable<TValue>
         where TValue : struct {
         private TValue[] _value;
 
@@ -106,5 +106,6 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         protected override void ModifyChildren(ModificationType modificationType) { }
+        protected override void SetDeserializedContainerToChildren() { }
     }
 }

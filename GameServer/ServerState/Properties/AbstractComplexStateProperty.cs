@@ -94,5 +94,14 @@ namespace Hull.GameServer.ServerState.Properties {
         public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
             return new FieldsEnumerator(_fields.GetEnumerator(), this);
         }
+
+        protected override void SetDeserializedContainerToChildren() {
+            if (_fields != null) {
+                foreach (var fieldInfo in _fields) {
+                    var field = (IStateProperty)fieldInfo.GetValue(this);
+                    field.DeserializedContainer = this;
+                }
+            }
+        }
     }
 }

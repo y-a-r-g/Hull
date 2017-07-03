@@ -10,8 +10,11 @@ namespace Hull.GameServer.ServerState.Properties {
 
         public delegate IEnumerator<IStateProperty> GetChildrenEnumeratorDelegate();
 
+        public delegate void SetDeserializedContainerToChildrenDelegate();
+
         public ModifyChildrenDelegate ModifyChildrenImpl;
         public GetChildrenEnumeratorDelegate GetChildrenEnumeratorImpl;
+        public SetDeserializedContainerToChildrenDelegate SetDeserializedContainerToChildrenImpl;
 
         public PlaceholderStatePropertyContainer() { }
 
@@ -20,6 +23,10 @@ namespace Hull.GameServer.ServerState.Properties {
 
         protected override void ModifyChildren(ModificationType modificationType) {
             ModifyChildrenImpl(modificationType);
+        }
+
+        protected override void SetDeserializedContainerToChildren() {
+            SetDeserializedContainerToChildrenImpl();
         }
 
         public override IEnumerator<IStateProperty> GetChildrenEnumerator() {

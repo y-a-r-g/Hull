@@ -99,7 +99,7 @@ namespace Hull.GameServer.ServerState {
         }
 
         public void OnDeserialization(object sender) {
-            Container = this;
+            DeserializedContainer = this;
         }
     }
 }

@@ -50,7 +50,8 @@ namespace Hull.GameServer.ServerState.Properties {
         public LinearMapStateProperty() {
             _property = new PlaceholderStatePropertyContainer {
                 ModifyChildrenImpl = ModifyChildrenImpl,
-                GetChildrenEnumeratorImpl = GetChildrenEnumeratorImpl
+                GetChildrenEnumeratorImpl = GetChildrenEnumeratorImpl,
+                SetDeserializedContainerToChildrenImpl = SetDeserializedContainerToChildrenImpl
             };
         }
 
@@ -59,6 +60,7 @@ namespace Hull.GameServer.ServerState.Properties {
                 "_property", typeof(PlaceholderStatePropertyContainer));
             _property.ModifyChildrenImpl = ModifyChildrenImpl;
             _property.GetChildrenEnumeratorImpl = GetChildrenEnumeratorImpl;
+            _property.SetDeserializedContainerToChildrenImpl = SetDeserializedContainerToChildrenImpl;
             BindItems();
         }
 
@@ -126,6 +128,10 @@ namespace Hull.GameServer.ServerState.Properties {
             set { _property.Container = value; }
         }
 
+        public IStatePropertyContainer DeserializedContainer {
+            set { _property.DeserializedContainer = value; }
+        }
+
         /// <summary>
         /// Returns <value>true</value> if this property was changed since last tick
         /// </summary>
@@ -175,6 +181,12 @@ namespace Hull.GameServer.ServerState.Properties {
         private void ModifyChildrenImpl(ModificationType modificationType) {
             foreach (var kvp in this) {
                 _property.ModifyChild(kvp.Value, modificationType);
+            }
+        }
+
+        private void SetDeserializedContainerToChildrenImpl() {
+            foreach (var kvp in this) {
+                kvp.Value.DeserializedContainer = this;
             }
         }
     }

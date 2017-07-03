@@ -10,6 +10,12 @@ namespace Hull.GameServer.Interfaces {
         /// Parent property for this property.
         /// </summary>
         IStatePropertyContainer Container { get; set; }
+        
+        
+        /// <summary>
+        /// Sets container without children modification. Containers should set container to children
+        /// </summary>
+        IStatePropertyContainer DeserializedContainer { set; }
 
         /// <summary>
         /// Returns <code>true</code> if this property was changed since last tick.

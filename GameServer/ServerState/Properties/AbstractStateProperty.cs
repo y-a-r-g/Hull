@@ -28,7 +28,7 @@ namespace Hull.GameServer.ServerState.Properties {
             info.AddValue("_uniqueId", _uniqueId, typeof(ulong));
         }
 
-        private static ulong NextUniqueId {
+        protected static ulong NextUniqueId {
             get {
                 var time = DateTime.Now.ToUniversalTime().Ticks;
                 if (_lastTime != time) {
@@ -71,6 +71,10 @@ namespace Hull.GameServer.ServerState.Properties {
                     }
                 }
             }
+        }
+
+        public virtual IStatePropertyContainer DeserializedContainer {
+            set { _container = value; }
         }
 
         /// <summary>

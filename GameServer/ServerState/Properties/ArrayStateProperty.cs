@@ -160,5 +160,11 @@ namespace Hull.GameServer.ServerState.Properties {
                 }
             }
         }
+
+        protected override void SetDeserializedContainerToChildren() {
+            for (var i = 0; i < _value.Length; i++) {
+                _value[i].DeserializedContainer = this;
+            }
+        }
     }
 }

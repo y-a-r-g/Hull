@@ -69,5 +69,14 @@ namespace Hull.GameServer.ServerState.Properties {
         /// </summary>
         /// <param name="modificationType"></param>
         protected abstract void ModifyChildren(ModificationType modificationType);
+
+        protected abstract void SetDeserializedContainerToChildren();
+
+        public override IStatePropertyContainer DeserializedContainer {
+            set {
+                base.DeserializedContainer = value;
+                SetDeserializedContainerToChildren();
+            }
+        }
     }
 }
