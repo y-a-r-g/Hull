@@ -6,11 +6,11 @@ using Hull.GameServer.Interfaces;
 
 namespace Hull.GameServer.ServerState.Properties {
     /// <summary>
-    /// This property holds an array of nested properties. Nested properties can be observed as well.
+    /// This property holds a list of nested properties. Nested properties can be observed as well.
     /// </summary>
     /// <typeparam name="TItem"></typeparam>
     [Serializable]
-    public class ArrayStateProperty<TItem> : AbstractArrayStateProperty<TItem> where TItem : IStateProperty {
+    public class ListStateProperty<TItem> : AbstractListStateProperty<TItem> where TItem : IStateProperty {
         private struct ItemsEnumerator : IEnumerator<IStateProperty> {
             private readonly IEnumerator<TItem> _enumerator;
 
@@ -39,12 +39,12 @@ namespace Hull.GameServer.ServerState.Properties {
             }
         }
 
-        public ArrayStateProperty() { }
-        public ArrayStateProperty(TItem[] value, bool doNotCopyReference = false) : base(value, doNotCopyReference) { }
-        public ArrayStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        public ListStateProperty() { }
+        public ListStateProperty(TItem[] value, bool doNotCopyReference = false) : base(value, doNotCopyReference) { }
+        public ListStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        protected override void BindItems(TItem[] items)  {
-            for (var i = 0; i < items.Length; i++) {
+        protected override void BindItems(IList<TItem> items)  {
+            for (var i = 0; i < items.Count; i++) {
                 var item = items[i];
                 if (item != null) {
                     item.Container = this;
@@ -53,10 +53,10 @@ namespace Hull.GameServer.ServerState.Properties {
             }
         }
 
-        public override void Set(TItem[] value, bool doNotCopyReference = false) {
-            if (Value != null) {
-                for (var i = 0; i < Value.Length; i++) {
-                    var item = Value[i];
+        public override void Set(IList<TItem> value, bool doNotCopyReference = false) {
+            if (value != null) {
+                for (var i = 0; i < value.Count; i++) {
+                    var item = value[i];
                     if (item != null) {
                         item.Container = null;
                     }
@@ -78,12 +78,12 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         public override IEnumerator<IStateProperty> GetChildrenEnumerator() {
-            return new ItemsEnumerator(((IEnumerable<TItem>)Value).GetEnumerator());
+            return new ItemsEnumerator(Value.GetEnumerator());
         }
 
         protected override void ModifyChildren(ModificationType modificationType) {
             if (Value != null) {
-                for (var i = 0; i < Value.Length; i++) {
+                for (var i = 0; i < Value.Count; i++) {
                     var item = Value[i];
                     ModifyChild(item, modificationType);
                     Value[i] = item;
@@ -91,9 +91,45 @@ namespace Hull.GameServer.ServerState.Properties {
             }
         }
 
+        public override void Add(TItem item) {
+            item.Container = this;
+            base.Add(item);
+        }
+
+        public override bool Remove(TItem item) {
+            var result = base.Remove(item);
+            if (result) {
+                item.Container = null;
+            }
+            return result;
+        }
+
+        public override void Clear() {
+            if (Value != null) {
+                for (var i = 0; i < Value.Count; i++) {
+                    var item = Value[i];
+                    item.Container = null;
+                }
+            }
+            base.Clear();
+        }
+
+        public override void Insert(int index, TItem item) {
+            item.Container = this;
+            base.Insert(index, item);
+        }
+
+        public override void RemoveAt(int index) {
+            var item = Value[index];
+            if (item != null) {
+                item.Container = null;
+            }
+            base.RemoveAt(index);
+        }
+
         protected override void SetDeserializedContainerToChildren() {
             base.SetDeserializedContainerToChildren();
-            for (var i = 0; i < Value.Length; i++) {
+            for (var i = 0; i < Value.Count; i++) {
                 if (Value != null) {
                     Value[i].DeserializedContainer = this;
                 }
