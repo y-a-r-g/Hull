@@ -45,6 +45,7 @@ namespace Hull.Unity.Batching {
         public void Instantiated() {
             _meshRendererWasEnabled = _meshRenderer.enabled;
             _meshRenderer.enabled = false;
+            MeshWasUpdated();
         }
 
         public void Pooled() {

@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace Hull.Types {
+    [Serializable]
     public struct Vector4I {
         public int X;
         public int Y;

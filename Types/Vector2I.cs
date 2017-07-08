@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Hull.Types {
     [Serializable]
@@ -40,6 +41,12 @@ namespace Hull.Types {
         public static bool operator !=(Vector2I a, Vector2I b) {
             return !(a == b);
         }
+
+        public Vector2I Clamped {
+            get {
+                return new Vector2I(Math.Max(-1, Mathf.Min(1, X)), Math.Max(-1, Mathf.Min(1, Y)));
+            }
+        } 
 
         public override bool Equals(object other) {
             if ((other == null) || (other.GetType() != typeof(Vector2I))) {
