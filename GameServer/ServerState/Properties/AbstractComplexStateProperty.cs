@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using Hull.Extensions;
 using Hull.GameServer.Interfaces;
 
@@ -102,6 +103,21 @@ namespace Hull.GameServer.ServerState.Properties {
                     field.DeserializedContainer = this;
                 }
             }
+        }
+
+        public override string ToString() {
+            var result = new StringBuilder();
+            
+            if (_fields != null) {
+                foreach (var fieldInfo in _fields) {
+                    result.Append(fieldInfo.Name);
+                    result.Append("={");
+                    result.Append((IStateProperty)fieldInfo.GetValue(this));
+                    result.Append("} ");
+                }
+            }
+
+            return result.ToString();
         }
     }
 }

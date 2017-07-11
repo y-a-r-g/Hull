@@ -62,6 +62,13 @@ namespace Hull.GameClient.Observers {
             _observers.Remove(stateObserver);
         }
 
+        /// <summary>
+        /// Removes all observers
+        /// </summary>
+        public void RemoveAllObservers() {
+            _observers.Clear();
+        }
+
         private void OnStateChange(TState state) {
             if ((_pauseObservingCounter == 0) && (_statesLine.Count == 0)) {
                 NotifyObserves(state);

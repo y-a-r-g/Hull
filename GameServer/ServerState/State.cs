@@ -53,7 +53,7 @@ namespace Hull.GameServer.ServerState {
 
         /// <summary>
         /// Returns <value>true</value> if modification of the state is prohibited. 
-        /// It will be always <value>false</value> when <see cref="IUpdater{TState,TRuntime}.Update"/> or <see cref="IRequestProcessor{TState,TRuntime}.ProcessRequest"/> method called.
+        /// It will be always <value>false</value> when <see cref="IUpdater{TState,TRuntime}.Update"/> or <see cref="IRequestProcessor{TState,TRuntime,TRequest}.ProcessRequest"/> method called.
         /// It will be always <value>true</value> for client. 
         /// </summary>
         public bool IsReadonly { get; private set; }
@@ -77,7 +77,7 @@ namespace Hull.GameServer.ServerState {
         /// <param name="changeInfo"></param>
         /// <exception cref="InvalidOperationException">Trying to modify state in readonly phase</exception>
         /// <exception cref="ArgumentNullException"></exception>
-        internal void AddChangeInfo(IStateChangeInfo changeInfo) {
+        public void AddChangeInfo(IStateChangeInfo changeInfo) {
             if (IsReadonly) {
                 throw new InvalidOperationException("State is readonly");
             }
