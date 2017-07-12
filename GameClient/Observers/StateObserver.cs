@@ -21,6 +21,11 @@ namespace Hull.GameClient.Observers {
         private float _lastUpdateTime;
         private int _pauseObservingCounter;
         private readonly Queue<TState> _statesLine = new Queue<TState>();
+        
+        /// <summary>
+        /// Last observed state. This is the same object that provided to the last called observer.
+        /// </summary>
+        public TState LastState { get; private set; }
 
         private readonly LinkedList<IStateObserver<TState>> _observers = new LinkedList<IStateObserver<TState>>();
 
@@ -28,11 +33,14 @@ namespace Hull.GameClient.Observers {
         /// Creates an instance of the state observer.
         /// </summary>
         /// <param name="serverConnector">Server connector used to receive state</param>
+        /// <param name="initialState">Initial state for observing</param>
         /// <exception cref="ArgumentNullException">Server Connector is null</exception>
-        public StateObserver(IServerConnector<TState> serverConnector) {
+        public StateObserver(IServerConnector<TState> serverConnector, TState initialState) {
             if (serverConnector == null) {
                 throw new ArgumentNullException("serverConnector");
             }
+
+            LastState = initialState;
 
             serverConnector.StateChanged += OnStateChange;
         }
@@ -100,6 +108,7 @@ namespace Hull.GameClient.Observers {
 
         private void NotifyObserves(TState state) {
             _lastUpdateTime = Time.time;
+            LastState = state;
 
             var iterator = _observers.First;
             while (iterator != null) {
