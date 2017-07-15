@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Hull.Unity.Animation {
-    [RequireComponent(typeof(SpriteRenderer))]
     public class AnimatedSprite : MonoBehaviour {
         private class WaitAnimationFinishedYeldInstruction : CustomYieldInstruction {
             private readonly AnimatedSprite _sprite;
@@ -33,6 +33,8 @@ namespace Hull.Unity.Animation {
         protected bool Finished;
         protected float Time;
         private SpriteRenderer _spriteRenderer;
+        private Image _image;
+        private bool _useImage;
         private CustomYieldInstruction _waitInstruction;
 
         public float FramesPerSecond {
@@ -95,12 +97,24 @@ namespace Hull.Unity.Animation {
             Finished = true;
         }
 
+        private Sprite Sprite {
+            get { return _useImage ? _image.sprite : _spriteRenderer.sprite; }
+            set {
+                if (_useImage) {
+                    _image.sprite = value;
+                }
+                else {
+                    _spriteRenderer.sprite = value;
+                }
+            }
+        }
+
         public void Rewind() {
             Time = 0;
             if ((_frames == null) || (_frames.Length == 0)) {
                 return;
             }
-            
+
             var startFrame = Mathf.Max(StartFrame.HasValue ? StartFrame.Value : int.MinValue, 0);
             var endFrame = Mathf.Min(EndFrame.HasValue ? EndFrame.Value : int.MaxValue, _frames.Length - 1);
             if (startFrame > endFrame) {
@@ -108,13 +122,19 @@ namespace Hull.Unity.Animation {
             }
 
             var frame = startFrame;
-            if (_spriteRenderer.sprite != _frames[frame]) {
-                _spriteRenderer.sprite = _frames[frame];
+            if (Sprite != _frames[frame]) {
+                Sprite = _frames[frame];
             }
         }
 
         protected virtual void Awake() {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            _image = GetComponent<Image>();
+            _useImage = _image;
+
+            if (!_spriteRenderer && !_image) {
+                Debug.LogError("AnimatedSprite requires either SpriteRenderer or Image component added to the same object!");
+            }
         }
 
         protected virtual void Update() {
@@ -162,8 +182,8 @@ namespace Hull.Unity.Animation {
                 Stop();
             }
 
-            if (_spriteRenderer.sprite != _frames[frame]) {
-                _spriteRenderer.sprite = _frames[frame];
+            if (Sprite != _frames[frame]) {
+                Sprite = _frames[frame];
             }
         }
     }
