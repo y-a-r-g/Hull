@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
-#if UNITY_5
+#if UNITY_5_3_OR_NEWER
 using UnityEngine;
 
 #endif
@@ -20,7 +20,7 @@ namespace Hull.GameServer {
     ///
     /// </summary>
     /// <typeparam name="TState">Type of the server <see cref="State"/></typeparam>
-    /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime"/></typeparam>
+    /// <typeparam name="TRuntime">Type of the server <see cref="IServerRuntime{TState}"/></typeparam>
     public class GameProcessor<TState, TRuntime> : IRequestReceiver<TState>
         where TState : State
         where TRuntime : IServerRuntime<TState> {
@@ -34,7 +34,7 @@ namespace Hull.GameServer {
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
         private TState _state;
 
-#if !UNITY_5
+#if !UNITY_5_3_OR_NEWER
         private const float dt = 1f / 30;
 #endif
 
@@ -61,7 +61,7 @@ namespace Hull.GameServer {
                 player.OnRegister(this);
             }
 
-#if UNITY_5
+#if UNITY_5_3_OR_NEWER
             var updater = new GameObject("Hull.UnityUpdater").AddComponent<UnityUpdater>();
             updater.StartAction = Start;
             updater.FixedUpdateAction = FixedUpdate;
@@ -104,7 +104,7 @@ namespace Hull.GameServer {
                     Debug.Log(ex);
                 }
             }
-#if UNITY_5
+#if UNITY_5_3_OR_NEWER
             var dt = Time.deltaTime;
 #endif
             foreach (var updater in _updaters) {
