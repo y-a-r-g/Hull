@@ -32,9 +32,10 @@ namespace Hull.GameClient.Observers {
         /// </summary>
         /// <param name="properties">Properties to observe</param>
         /// <param name="mode">Observe mode</param>
+        /// <param name="handler">Handler that will be automatically added to ObservedStatePropertyChanged event</param>
         /// <exception cref="ArgumentNullException">Properties are null or one of properties is null</exception>
         /// <exception cref="ArgumentException">Properties are empty</exception>
-        public StatePropertiesObserver(IStateProperty[] properties, ObserveMode mode = ObserveMode.Any) {
+        public StatePropertiesObserver(IStateProperty[] properties, ObserveMode mode = ObserveMode.Any, ObservedStatePropertiesChangedDelegate handler = null) {
             if (properties == null) {
                 throw new ArgumentNullException("properties");
             }
@@ -48,6 +49,9 @@ namespace Hull.GameClient.Observers {
             }
             _propertyUniqueIds = properties.Map(p => p.UniqueId);
             _mode = mode;
+            if (handler != null) {
+                ObservedStatePropertiesChanged += handler;
+            }
         }
 
         public void OnStateChange(TState state) {

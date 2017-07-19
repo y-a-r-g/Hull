@@ -37,18 +37,18 @@ namespace Hull.Unity.Editor.Tests.Types {
         public void Equality() {
             var a = new Vector2I(42, 17);
             var b = new Vector2I(42, 17);
-            Assert.True(a == b);
-            Assert.False(a != b);
+            Assert.IsTrue(a == b);
+            Assert.IsFalse(a != b);
             Assert.AreEqual(a, b);
         }
 
         [Test]
-        public void NotEqualily() {
+        public void NotEquality() {
             var a = new Vector2I(42, 17);
             var b = new Vector2I(6, 50);
 
-            Assert.False(a == b);
-            Assert.True(a != b);
+            Assert.IsFalse(a == b);
+            Assert.IsTrue(a != b);
             Assert.AreNotEqual(a, b);
         }
     }

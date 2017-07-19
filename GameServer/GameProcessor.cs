@@ -178,6 +178,7 @@ namespace Hull.GameServer {
                 var replaced = _state != null;
                 _state = value;
                 if (replaced) {
+                    value.ModifyWithChildren(ModificationType.Changed);
                     SendStateChange();
                 }
             }

@@ -30,7 +30,7 @@ namespace Hull.Unity.Editor.Tests.Pooling {
             Assert.AreNotSame(prefab, instance);
 
             var poolManaged = instance.GetComponent<PoolManaged>();
-            Assert.NotNull(poolManaged);
+            Assert.IsNotNull(poolManaged);
 
             Assert.AreSame(prefab, poolManaged.Prefab);
 
@@ -50,7 +50,7 @@ namespace Hull.Unity.Editor.Tests.Pooling {
             Assert.AreSame(instance, instance2);
 
             var poolManaged2 = instance2.GetComponent<PoolManaged>();
-            Assert.NotNull(poolManaged2);
+            Assert.IsNotNull(poolManaged2);
 
             Assert.AreSame(prefab, poolManaged2.Prefab);
 

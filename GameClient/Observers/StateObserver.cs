@@ -55,7 +55,10 @@ namespace Hull.GameClient.Observers {
             if (stateObserver == null) {
                 throw new ArgumentNullException("stateObserver");
             }
-            _observers.AddLast(stateObserver);
+
+            if (!_observers.Contains(stateObserver)) {
+                _observers.AddLast(stateObserver);
+            }
         }
 
         /// <summary>

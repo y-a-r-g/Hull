@@ -27,12 +27,16 @@ namespace Hull.GameClient.Observers {
         /// Creates an observer for given property
         /// </summary>
         /// <param name="property">Property to observe</param>
+        /// <param name="handler">Handler that will be automatically added to ObservedStatePropertyChanged event</param>
         /// <exception cref="ArgumentNullException">Property is null</exception>
-        public StatePropertyObserver(TProperty property) {
+        public StatePropertyObserver(TProperty property, ObservedStatePropertyChangedDelegate handler = null) {
             if (property == null) {
                 throw new ArgumentNullException("property");
             }
             _propertyUniqueId = property.UniqueId;
+            if (handler != null) {
+                ObservedStatePropertyChanged += handler;
+            }
         }
 
         public void OnStateChange(TState state) {

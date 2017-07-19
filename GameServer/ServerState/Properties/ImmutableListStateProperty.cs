@@ -68,6 +68,7 @@ namespace Hull.GameServer.ServerState.Properties {
         /// </summary>
         /// <param name="value"></param>
         public void Set(ImmutableList<TValue> value) {
+            Modify(ModificationType.Changed);
             _list = value;
         }
 
