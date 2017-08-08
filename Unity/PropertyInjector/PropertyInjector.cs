@@ -14,8 +14,7 @@ namespace Hull.Unity.PropertyInjector {
 
         public static void Inject(PropertyInjector pi) {
             foreach (var component in pi.gameObject.GetComponents<MonoBehaviour>()) {
-                foreach (var fieldInfo in component.GetType().GetFields(
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+                foreach (var fieldInfo in component.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
                     PropertyInjectorCore.InitializeField(fieldInfo, component);
                 }
             }
