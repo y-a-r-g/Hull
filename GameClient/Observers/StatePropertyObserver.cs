@@ -24,16 +24,28 @@ namespace Hull.GameClient.Observers {
         private IEnumerable<ulong> _path;
 
         /// <summary>
+        /// Observing property path
+        /// </summary>
+        public IEnumerable<ulong> Path {
+            get { return _path; }
+        }
+
+        /// <summary>
         /// Creates an observer for given property
         /// </summary>
         /// <param name="property">Property to observe</param>
         /// <param name="handler">Handler that will be automatically added to ObservedStatePropertyChanged event</param>
         /// <exception cref="ArgumentNullException">Property is null</exception>
-        public StatePropertyObserver(TProperty property, ObservedStatePropertyChangedDelegate handler = null) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
-            _propertyUniqueId = property.UniqueId;
+        public StatePropertyObserver(TProperty property, ObservedStatePropertyChangedDelegate handler = null) : this(property.UniqueId, handler) { }
+
+        /// <summary>
+        /// Creates an observer for given property
+        /// </summary>
+        /// <param name="propertyId">Id of the property to observe</param>
+        /// <param name="handler">Handler that will be automatically added to ObservedStatePropertyChanged event</param>
+        /// <exception cref="ArgumentNullException">Property is null</exception>
+        public StatePropertyObserver(ulong propertyId, ObservedStatePropertyChangedDelegate handler = null) {
+            _propertyUniqueId = propertyId;
             if (handler != null) {
                 ObservedStatePropertyChanged += handler;
             }

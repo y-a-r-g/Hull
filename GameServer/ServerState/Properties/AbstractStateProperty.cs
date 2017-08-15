@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Hull.GameServer.Interfaces;
+using Hull.GameServer.ServerState.StateChangeInfos;
 
 namespace Hull.GameServer.ServerState.Properties {
     [Serializable]
@@ -51,6 +52,7 @@ namespace Hull.GameServer.ServerState.Properties {
                         _state = (State)prop;
                     }
                 }
+
                 return _state;
             }
         }
@@ -102,8 +104,18 @@ namespace Hull.GameServer.ServerState.Properties {
                     throw new InvalidOperationException("State is readonly");
                 }
 
-                UpdateId = CurrentState.UpdateId;
-                _modificationType = modificationType;
+                if (!IsModified || (modificationType != ModificationType.Changed)) {
+                    UpdateId = CurrentState.UpdateId;
+                    _modificationType = modificationType;
+                }
+
+                if (IsReplicated && (modificationType == ModificationType.Added)) {
+                    CurrentState.AddChangeInfo(new ReplicatedStatePropertyAdded {PropertyId = UniqueId});
+                }
+
+                if (IsReplicated && (modificationType == ModificationType.Removed)) {
+                    CurrentState.AddChangeInfo(new ReplicatedStatePropertyRemoved {PropertyId = UniqueId});
+                }
 
                 if ((Container != null) && (Container != this)) {
                     Container.Modify(ModificationType.Changed);
@@ -113,6 +125,10 @@ namespace Hull.GameServer.ServerState.Properties {
 
         public ulong UniqueId {
             get { return _uniqueId; }
+        }
+
+        public virtual bool IsReplicated {
+            get { return false; }
         }
     }
 }

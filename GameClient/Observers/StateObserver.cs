@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Hull.GameClient.Interfaces;
 using Hull.GameServer.ServerState;
+using Hull.GameServer.ServerState.StateChangeInfos;
 using UnityEngine;
 
 namespace Hull.GameClient.Observers {
@@ -20,8 +21,10 @@ namespace Hull.GameClient.Observers {
 
         private float _lastUpdateTime;
         private int _pauseObservingCounter;
+        private IReplicator<TState> _replicator;
+        private Dictionary<ulong, IReplica<TState>> _observedReplicas = new Dictionary<ulong, IReplica<TState>>();
         private readonly Queue<TState> _statesLine = new Queue<TState>();
-        
+
         /// <summary>
         /// Last observed state. This is the same object that provided to the last called observer.
         /// </summary>
@@ -34,11 +37,14 @@ namespace Hull.GameClient.Observers {
         /// </summary>
         /// <param name="serverConnector">Server connector used to receive state</param>
         /// <param name="initialState">Initial state for observing</param>
+        /// <param name="replicator">Replicator factory</param>
         /// <exception cref="ArgumentNullException">Server Connector is null</exception>
-        public StateObserver(IServerConnector<TState> serverConnector, TState initialState) {
+        public StateObserver(IServerConnector<TState> serverConnector, TState initialState, IReplicator<TState> replicator = null) {
             if (serverConnector == null) {
                 throw new ArgumentNullException("serverConnector");
             }
+
+            _replicator = replicator;
 
             LastState = initialState;
 
@@ -70,6 +76,7 @@ namespace Hull.GameClient.Observers {
             if (stateObserver == null) {
                 throw new ArgumentNullException("stateObserver");
             }
+
             _observers.Remove(stateObserver);
         }
 
@@ -109,9 +116,39 @@ namespace Hull.GameClient.Observers {
             }
         }
 
+        /// <summary>
+        /// Destroys all created replicas
+        /// </summary>
+        public void DestroyAllReplicas() {
+            foreach (var replica in _observedReplicas) {
+                replica.Value.OnRemove(LastState);
+                _replicator.Destroy(replica.Value);
+            }
+            _observedReplicas.Clear();
+        }
+
         private void NotifyObserves(TState state) {
             _lastUpdateTime = Time.time;
             LastState = state;
+
+            foreach (var stateChangeInfo in state.ChangeInfo) {
+                if (stateChangeInfo is ReplicatedStatePropertyAdded) {
+                    var replicatedStateAdded = (ReplicatedStatePropertyAdded)stateChangeInfo;
+                    var path = PropertyFinder.GetPropertyPath(state, replicatedStateAdded.PropertyId);
+                    var property = PropertyFinder.FindProperty(state, path);
+                    var replica = _replicator.Instantinate(property);
+                    replica.InitializeReplica(replicatedStateAdded.PropertyId, this);
+                    _observedReplicas.Add(replicatedStateAdded.PropertyId, replica);
+                    replica.OnAdd(property, state);
+                }
+
+                if (stateChangeInfo is ReplicatedStatePropertyRemoved) {
+                    var replicatedStateRemoved = (ReplicatedStatePropertyRemoved)stateChangeInfo;
+                    var replica = _observedReplicas[replicatedStateRemoved.PropertyId];
+                    replica.OnRemove(state);
+                    _replicator.Destroy(replica);
+                }
+            }
 
             var iterator = _observers.First;
             while (iterator != null) {
