@@ -32,7 +32,7 @@ namespace Hull.Unity.Animation {
         private bool _paused = true;
         protected bool Finished;
         protected float Time;
-        private SpriteRenderer _spriteRenderer;
+        protected SpriteRenderer _spriteRenderer;
         private Image _image;
         private bool _useImage;
         private CustomYieldInstruction _waitInstruction;
