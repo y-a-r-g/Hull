@@ -20,10 +20,10 @@ namespace Hull.GameServer.ServerState.Properties {
                 if (base.Container != value) {
                     base.Container = value;
                     if (base.Container != null) {
-                        ModifyWithChildren(ModificationType.Added);
+                        ModifyChildren(ModificationType.Added);
                     }
                     else {
-                        ModifyWithChildren(ModificationType.Removed);
+                        ModifyChildren(ModificationType.Removed);
                     }
                 }
             }

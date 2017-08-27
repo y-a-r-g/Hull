@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
@@ -54,6 +55,13 @@ namespace Hull.GameClient.Observers {
         /// <param name="path">Path to the property</param>
         /// <returns>Property instance or null if not found</returns>
         public static IStateProperty FindProperty(State state, IEnumerable<ulong> path) {
+            if (state == null) {
+                throw new ArgumentNullException("state");
+            }
+            if (path == null) {
+                throw new ArgumentNullException("path");
+            }
+            
             var property = (IStateProperty)state;
             foreach (var uid in path) {
                 if (property == null) {

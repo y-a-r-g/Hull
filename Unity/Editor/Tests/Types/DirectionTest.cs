@@ -11,7 +11,7 @@ namespace Hull.Unity.Editor.Tests.Types {
                     if (a != b) {
                         Assert.AreNotEqual(a, b);
                         Assert.AreNotEqual(a.ToString(), b.ToString());
-                        Assert.False(a.Delta == b.Delta);
+                        Assert.IsFalse(a.Delta == b.Delta);
                     }
                 }
                 Assert.AreNotEqual(a, Direction.Invalid);
