@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -120,6 +121,7 @@ namespace Hull.Unity.PropertyInjector {
             var www = new WWW(url);
             yield return www;
 
+            _values = new Dictionary<string, OrderedDictionary>();
             var lines = www.text.Split('\n');
             var group = "";
             foreach (var line in lines) {
@@ -171,34 +173,38 @@ namespace Hull.Unity.PropertyInjector {
         public static void InitializeField(FieldInfo fieldInfo, object component) {
             var group = component.GetType().Name;
             var key = fieldInfo.Name;
-            OrderedDictionary keys;
 
             foreach (var fieldInfoCustomAttribute in fieldInfo.GetCustomAttributes(true)) {
                 var injectedArray = fieldInfoCustomAttribute as InjectedArrayAttribute;
+                OrderedDictionary keys;
                 if (injectedArray != null) {
                     group = injectedArray.Group;
                     if (Instance._values.TryGetValue(group, out keys)) {
                         var elementType = fieldInfo.FieldType.GetElementType();
                         var array = Array.CreateInstance(elementType, keys.Count);
-                        for (var i = 0; i < keys.Count; i++) {
-                            var value = (string)keys[i];
+                        var index = 0;
+                        foreach (DictionaryEntry kvp in keys) {
+                            var value = (string)kvp.Value;
                             if (elementType == typeof(int)) {
-                                array.SetValue(int.Parse(value), i);
+                                array.SetValue(int.Parse(value, CultureInfo.InvariantCulture), index);
                             }
                             else if (elementType == typeof(float)) {
-                                array.SetValue(float.Parse(value), i);
+                                array.SetValue(float.Parse(value, CultureInfo.InvariantCulture), index);
                             }
                             else if (elementType == typeof(string)) {
-                                array.SetValue(value, i);
+                                array.SetValue(value, index);
                             }
                             else if (elementType == typeof(bool)) {
-                                array.SetValue(value != "false", i);
+                                array.SetValue(value != "false", index);
                             }
                             else {
                                 throw new ArrayTypeMismatchException();
                             }
-                            fieldInfo.SetValue(component, array);
+
+                            index++;
                         }
+
+                        fieldInfo.SetValue(component, array);
                     }
                 }
 

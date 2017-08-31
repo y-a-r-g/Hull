@@ -36,7 +36,8 @@ namespace Hull.Unity.Pooling {
             if (component == null) {
                 throw new ArgumentNullException();
             }
-            return Instantiate(component.gameObject).GetComponent<T>();
+
+            return (T)Instantiate(component.gameObject).GetComponent(component.GetType());
         }
 
         public static void Destroy(GameObject gameObject) {
@@ -78,6 +79,7 @@ namespace Hull.Unity.Pooling {
                     SafeDestroy(gameObject);
                 }
             }
+
             Pools.Clear();
         }
 

@@ -96,6 +96,7 @@ namespace Hull.GameServer {
                     throw new ArgumentOutOfRangeException(
                         string.Format("Processor for <{0}> request is not registered", item.Request.GetType()));
                 }
+
                 try {
                     processor.ProcessMethod.Invoke(
                         processor.RequestProcessor, new object[] {item.Request, item.Player, State, _runtime});
@@ -130,6 +131,7 @@ namespace Hull.GameServer {
             if (processor == null) {
                 throw new ArgumentNullException("processor");
             }
+
             _requestProcessors[typeof(TRequest)] = new RequestProcessorItem {
                 RequestProcessor = processor,
                 ProcessMethod = processor.GetType().GetMethod("ProcessRequest")
@@ -146,6 +148,7 @@ namespace Hull.GameServer {
             if (request == null) {
                 throw new ArgumentNullException("request");
             }
+
             _requestsQueue.Enqueue(new RequestQueueItem<TState> {Request = request, Player = player});
         }
 
@@ -158,6 +161,7 @@ namespace Hull.GameServer {
             if (updater == null) {
                 throw new ArgumentNullException("updater");
             }
+
             _updaters.Add(updater);
         }
 

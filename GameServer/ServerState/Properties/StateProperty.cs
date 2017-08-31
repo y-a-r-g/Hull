@@ -78,6 +78,7 @@ namespace Hull.GameServer.ServerState.Properties {
             if (_value != null) {
                 return _value.ToString();
             }
+
             return "";
         }
     }

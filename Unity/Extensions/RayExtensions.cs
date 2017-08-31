@@ -26,6 +26,7 @@ namespace Hull.Unity.Extensions {
                 if (Mathf.Abs(a) < Mathf.Epsilon) { // ray lies in triangle plane
                     return false; //2;
                 }
+
                 return false; //0;              // ray disjoint from plane
             }
 
@@ -52,6 +53,7 @@ namespace Hull.Unity.Extensions {
             if (s < 0.0 || s > 1.0) { // intersection is outside T
                 return false; //0;
             }
+
             var t = (uv * wu - uu * wv) / d;
             if (t < 0.0 || (s + t) > 1.0) { // intersection is outside T
                 return false; //0;

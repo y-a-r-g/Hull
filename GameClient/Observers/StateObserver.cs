@@ -124,6 +124,7 @@ namespace Hull.GameClient.Observers {
                 replica.Value.OnRemove(LastState);
                 _replicator.Destroy(replica.Value);
             }
+
             _observedReplicas.Clear();
         }
 

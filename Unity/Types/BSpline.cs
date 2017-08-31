@@ -53,6 +53,7 @@ namespace Hull.Unity.Types {
                         x += step;
                     }
                 }
+
                 return _lenght;
             }
         }
@@ -69,6 +70,7 @@ namespace Hull.Unity.Types {
             if (u >= 1 - epsilon) {
                 return End - ControlPoint;
             }
+
             return GetPoint(u + epsilon) - GetPoint(u - epsilon);
         }
 
@@ -112,8 +114,8 @@ namespace Hull.Unity.Types {
             var other = (BSpline)obj;
 
             return _begin.Equals(other._begin) &&
-                _controlPoint.Equals(other._controlPoint) &&
-                _end.Equals(other._end);
+                   _controlPoint.Equals(other._controlPoint) &&
+                   _end.Equals(other._end);
         }
 
         public override int GetHashCode() {

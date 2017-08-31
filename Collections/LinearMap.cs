@@ -26,6 +26,7 @@ namespace Hull.Collections {
                         return true;
                     }
                 }
+
                 return false;
             }
 
@@ -93,6 +94,7 @@ namespace Hull.Collections {
                 value = id.GetFrom(Items, Free);
                 return true;
             }
+
             value = default(T);
             return false;
         }
@@ -102,6 +104,7 @@ namespace Hull.Collections {
                 if (!Contains(id)) {
                     throw new ArgumentOutOfRangeException();
                 }
+
                 return id.GetFrom(Items, Free);
             }
             set { id.SetTo(Items, Free, value); }

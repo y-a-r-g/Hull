@@ -20,7 +20,7 @@ namespace Hull.GameServer.Interfaces {
         /// This method will be called by GameProcessor when coroutines should be updated.
         /// </summary>
         void UpdateCoroutines();
-        
+
         IEnumerable<IPlayer<TState>> Players { get; }
     }
 }

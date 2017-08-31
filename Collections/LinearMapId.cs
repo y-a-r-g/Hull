@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Hull.Collections {
     [Serializable]
@@ -26,6 +25,7 @@ namespace Hull.Collections {
             if (obj.GetType() != typeof(LinearMapId)) {
                 return false;
             }
+
             return _value == ((LinearMapId)obj)._value;
         }
 
@@ -37,6 +37,7 @@ namespace Hull.Collections {
             if (!ExistsIn(items, free)) {
                 throw new ArgumentOutOfRangeException();
             }
+
             items[_value] = default(T);
             free.AddFirst(_value);
         }
@@ -55,9 +56,11 @@ namespace Hull.Collections {
                     items.Add(value);
                     return;
                 }
+
                 free.AddFirst(items.Count);
                 items.Add(default(T));
             }
+
             items[_value] = value;
             free.Remove(_value);
         }
@@ -66,6 +69,7 @@ namespace Hull.Collections {
             if (free.Count > 0) {
                 return new LinearMapId(free.Last.Value);
             }
+
             return new LinearMapId(items.Count);
         }
 

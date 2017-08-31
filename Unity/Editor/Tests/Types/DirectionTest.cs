@@ -14,6 +14,7 @@ namespace Hull.Unity.Editor.Tests.Types {
                         Assert.IsFalse(a.Delta == b.Delta);
                     }
                 }
+
                 Assert.AreNotEqual(a, Direction.Invalid);
                 Assert.AreNotEqual(a.ToString(), Direction.Invalid.ToString());
             }
@@ -63,7 +64,7 @@ namespace Hull.Unity.Editor.Tests.Types {
             Assert.AreEqual(Direction.SW, Direction.W.NextCCW);
             Assert.AreEqual(Direction.W, Direction.NW.NextCCW);
         }
-        
+
         [Test]
         public void NextCW4() {
             Assert.AreEqual(Direction.E, Direction.N.NextCW4);

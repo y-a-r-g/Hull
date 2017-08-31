@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 
 namespace Hull.Types {
@@ -32,10 +33,25 @@ namespace Hull.Types {
             _delta = (Vector2I)info.GetValue("_delta", typeof(Vector2I));
         }
 
+        public Direction(BinaryReader reader) {
+            _mask = reader.ReadInt32();
+            _id = reader.ReadString();
+            if (_id == "") {
+                _id = null;
+            }
+            _delta = new Vector2I(reader);
+        }
+
         public void GetObjectData(SerializationInfo info, StreamingContext context) {
             info.AddValue("_mask", _mask, typeof(int));
             info.AddValue("_id", _id, typeof(string));
             info.AddValue("_delta", _delta, typeof(Vector2I));
+        }
+
+        public void Serialize(BinaryWriter writer) {
+            writer.Write(_mask);
+            writer.Write(_id ?? "");
+            _delta.Serialize(writer);
         }
 
         public Vector2I Delta {
@@ -86,15 +102,24 @@ namespace Hull.Types {
 
         private static Direction FromMask(int mask) {
             switch (mask) {
-            case 0x100: return None;
-            case 0x01: return N;
-            case 0x02: return NE;
-            case 0x04: return E;
-            case 0x08: return SE;
-            case 0x10: return S;
-            case 0x20: return SW;
-            case 0x40: return W;
-            case 0x80: return NW;
+                case 0x100:
+                    return None;
+                case 0x01:
+                    return N;
+                case 0x02:
+                    return NE;
+                case 0x04:
+                    return E;
+                case 0x08:
+                    return SE;
+                case 0x10:
+                    return S;
+                case 0x20:
+                    return SW;
+                case 0x40:
+                    return W;
+                case 0x80:
+                    return NW;
             }
 
             return Invalid;
@@ -151,7 +176,9 @@ namespace Hull.Types {
         }
 
         public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+
             return obj is Direction && Equals((Direction)obj);
         }
 

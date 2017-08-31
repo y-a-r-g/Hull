@@ -98,6 +98,6 @@ namespace Hull.GameServer.ServerState.Properties {
         }
 
         protected override void ModifyChildren(ModificationType modificationType) { }
-        protected override void SetDeserializedContainerToChildren() {}
+        protected override void SetDeserializedContainerToChildren() { }
     }
 }

@@ -107,7 +107,7 @@ namespace Hull.GameServer.ServerState.Properties {
 
         public override string ToString() {
             var result = new StringBuilder();
-            
+
             if (_fields != null) {
                 foreach (var fieldInfo in _fields) {
                     result.Append(fieldInfo.Name);

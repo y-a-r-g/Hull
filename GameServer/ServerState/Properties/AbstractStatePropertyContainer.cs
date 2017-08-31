@@ -48,6 +48,7 @@ namespace Hull.GameServer.ServerState.Properties {
                     }
                 }
             }
+
             return default(IStateProperty);
         }
 

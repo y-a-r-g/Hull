@@ -43,7 +43,7 @@ namespace Hull.GameServer.ServerState.Properties {
         public ArrayStateProperty(TItem[] value, bool doNotCopyReference = false) : base(value, doNotCopyReference) { }
         public ArrayStateProperty(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        protected override void BindItems(TItem[] items)  {
+        protected override void BindItems(TItem[] items) {
             for (var i = 0; i < items.Length; i++) {
                 var item = items[i];
                 if (item != null) {
@@ -62,7 +62,7 @@ namespace Hull.GameServer.ServerState.Properties {
                     }
                 }
             }
-            
+
             base.Set(value, doNotCopyReference);
         }
 

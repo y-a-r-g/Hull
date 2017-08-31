@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using Hull.Extensions;
@@ -7,8 +8,8 @@ namespace Hull.Types {
     [Serializable]
     public struct DirectionMask : ISerializable {
         private readonly int _mask;
-        
-        public readonly static DirectionMask Empty = new DirectionMask(0);
+
+        public static readonly DirectionMask Empty = new DirectionMask(0);
 
         public DirectionMask(DirectionMask mask = default(DirectionMask)) : this(mask._mask) { }
 
@@ -20,8 +21,16 @@ namespace Hull.Types {
             _mask = (int)info.GetValue("_mask", typeof(int));
         }
 
+        public DirectionMask(BinaryReader reader) {
+            _mask = reader.ReadInt32();
+        }
+
         public void GetObjectData(SerializationInfo info, StreamingContext context) {
             info.AddValue("_mask", _mask, typeof(int));
+        }
+
+        public void Serialize(BinaryWriter writer) {
+            writer.Write(_mask);
         }
 
         public bool IsEmpty {
@@ -77,7 +86,9 @@ namespace Hull.Types {
         }
 
         public override bool Equals(object obj) {
-            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+
             return obj is DirectionMask && Equals((DirectionMask)obj);
         }
 
@@ -113,6 +124,7 @@ namespace Hull.Types {
                     stringBuilder.Append("+");
                 }
             }
+
             if (stringBuilder.Length > 0) {
                 stringBuilder.Remove(stringBuilder.Length - 1, 1);
             }

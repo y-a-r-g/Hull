@@ -12,7 +12,7 @@ namespace Hull.GameServer.Players {
     /// Local server is used to emulate client-server game localy.
     /// </summary>
     public class LocalPlayer<TState> : IServerConnector<TState>, IPlayer<TState>
-        where TState : State  {
+        where TState : State {
         private IRequestReceiver<TState> _requestReceiver;
         private readonly LinearMapId _playerId;
         private readonly bool _cloneState;
@@ -68,6 +68,7 @@ namespace Hull.GameServer.Players {
             if (_requestReceiver == null) {
                 throw new InvalidOperationException("Player is not registered yet.");
             }
+
             _requestReceiver.ProcessRequest(request, this);
         }
 

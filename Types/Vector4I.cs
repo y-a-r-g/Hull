@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Hull.Types {
     [Serializable]
@@ -13,6 +14,20 @@ namespace Hull.Types {
             Y = y;
             Z = z;
             W = w;
+        }
+
+        public Vector4I(BinaryReader reader) {
+            X = reader.ReadInt32();
+            Y = reader.ReadInt32();
+            Z = reader.ReadInt32();
+            W = reader.ReadInt32();
+        }
+
+        public void Serialize(BinaryWriter writer) {
+            writer.Write(X);
+            writer.Write(Y);
+            writer.Write(Z);
+            writer.Write(W);
         }
 
         public static Vector4I operator +(Vector4I a, Vector4I b) {
@@ -34,15 +49,16 @@ namespace Hull.Types {
         public int this[int index] {
             get {
                 switch (index) {
-                case 0:
-                    return X;
-                case 1:
-                    return Y;
-                case 2:
-                    return Z;
-                case 3:
-                    return W;
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    case 3:
+                        return W;
                 }
+
                 throw new ArgumentOutOfRangeException("index", "Should be in [0..3]");
             }
         }
@@ -51,6 +67,7 @@ namespace Hull.Types {
             if ((other == null) || (other.GetType() != typeof(Vector4I))) {
                 return false;
             }
+
             return this == (Vector4I)other;
         }
 

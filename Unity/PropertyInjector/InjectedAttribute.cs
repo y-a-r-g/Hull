@@ -11,7 +11,7 @@ namespace Hull.Unity.PropertyInjector {
         /// Group of the property. If group is null - MonoBehaviour name will be used as group
         /// </summary>
         public string Group { get; set; }
-        
+
         /// <summary>
         /// Key of the property. If key is null - property name will be used as key
         /// </summary>

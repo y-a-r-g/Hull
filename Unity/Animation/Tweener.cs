@@ -14,7 +14,7 @@ namespace Hull.Unity.Animation {
         /// </summary>
         /// <param name="progress">Tweener progress value in range [0,1]</param>
         public delegate bool InterruptableTweenerUpdate(float progress);
-        
+
         /// <summary>
         /// Delegate for the infinity tweenner function. If returns false - tweener will be interrupted.
         /// </summary>
@@ -47,6 +47,7 @@ namespace Hull.Unity.Animation {
         public Tweener(float duration, TweenerUpdate update, EasingFunction easing = null) : this(duration, easing) {
             _updateFunction = update;
         }
+
         /// <summary>
         /// Creates new tweener. Can be used like <code>StartCoroutine(new Tweener(...))</code> or like <code>yield return new Tweener(...)</code> inside coroutines.
         /// </summary>

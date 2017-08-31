@@ -42,11 +42,13 @@ namespace Hull.GameClient.Observers {
             if (properties.Length == 0) {
                 throw new ArgumentException("Properties are empty", "properties");
             }
+
             foreach (var property in properties) {
                 if (property == null) {
                     throw new ArgumentNullException("properties");
                 }
             }
+
             _propertyUniqueIds = properties.Map(p => p.UniqueId);
             _mode = mode;
             if (handler != null) {
@@ -72,6 +74,7 @@ namespace Hull.GameClient.Observers {
                     }
                 }
             }
+
             if (_mode == ObserveMode.All) {
                 PropertyChanged(state);
             }

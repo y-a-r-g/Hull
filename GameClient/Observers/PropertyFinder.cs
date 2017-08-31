@@ -22,6 +22,7 @@ namespace Hull.GameClient.Observers {
             foreach (var id in path) {
                 result[index++] = id;
             }
+
             return result;
         }
 
@@ -34,6 +35,7 @@ namespace Hull.GameClient.Observers {
                         return true;
                     }
                 }
+
                 e.Reset();
                 while (e.MoveNext()) {
                     var childContainer = e.Current as IStatePropertyContainer;
@@ -44,6 +46,7 @@ namespace Hull.GameClient.Observers {
                         }
                     }
                 }
+
                 return false;
             }
         }
@@ -61,14 +64,16 @@ namespace Hull.GameClient.Observers {
             if (path == null) {
                 throw new ArgumentNullException("path");
             }
-            
+
             var property = (IStateProperty)state;
             foreach (var uid in path) {
                 if (property == null) {
                     break;
                 }
+
                 property = ((IStatePropertyContainer)property).GetChildProperty(uid);
             }
+
             return property;
         }
     }

@@ -27,6 +27,7 @@ namespace Hull.Collections {
             if (_set == null) {
                 return new EmptyEnumerator<TValue>();
             }
+
             return ((IEnumerable<TValue>)_set).GetEnumerator();
         }
 

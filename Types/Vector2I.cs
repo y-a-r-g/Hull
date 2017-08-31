@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace Hull.Types {
@@ -12,6 +13,16 @@ namespace Hull.Types {
         public Vector2I(int x, int y) {
             X = x;
             Y = y;
+        }
+
+        public Vector2I(BinaryReader reader) {
+            X = reader.ReadInt32();
+            Y = reader.ReadInt32();
+        }
+
+        public void Serialize(BinaryWriter writer) {
+            writer.Write(X);
+            writer.Write(Y);
         }
 
         public static Vector2I operator +(Vector2I a, Vector2I b) {
@@ -43,15 +54,14 @@ namespace Hull.Types {
         }
 
         public Vector2I Clamped {
-            get {
-                return new Vector2I(Math.Max(-1, Mathf.Min(1, X)), Math.Max(-1, Mathf.Min(1, Y)));
-            }
-        } 
+            get { return new Vector2I(Math.Max(-1, Mathf.Min(1, X)), Math.Max(-1, Mathf.Min(1, Y))); }
+        }
 
         public override bool Equals(object other) {
             if ((other == null) || (other.GetType() != typeof(Vector2I))) {
                 return false;
             }
+
             return this == (Vector2I)other;
         }
 

@@ -84,6 +84,7 @@ namespace Hull.GameServer.ServerState {
             if (changeInfo == null) {
                 throw new ArgumentNullException("changeInfo");
             }
+
             _changeInfo.Add(changeInfo);
         }
 
