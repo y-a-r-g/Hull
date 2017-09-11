@@ -32,7 +32,7 @@ namespace Hull.Unity.Animation {
         private bool _paused = true;
         protected bool Finished;
         protected float Time;
-        protected SpriteRenderer _spriteRenderer;
+        protected SpriteRenderer SpriteRenderer;
         private Image _image;
         private bool _useImage;
         private CustomYieldInstruction _waitInstruction;
@@ -98,13 +98,13 @@ namespace Hull.Unity.Animation {
         }
 
         private Sprite Sprite {
-            get { return _useImage ? _image.sprite : _spriteRenderer.sprite; }
+            get { return _useImage ? _image.sprite : SpriteRenderer.sprite; }
             set {
                 if (_useImage) {
                     _image.sprite = value;
                 }
                 else {
-                    _spriteRenderer.sprite = value;
+                    SpriteRenderer.sprite = value;
                 }
             }
         }
@@ -128,11 +128,11 @@ namespace Hull.Unity.Animation {
         }
 
         protected virtual void Awake() {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            SpriteRenderer = GetComponent<SpriteRenderer>();
             _image = GetComponent<Image>();
             _useImage = _image;
 
-            if (!_spriteRenderer && !_image) {
+            if (!SpriteRenderer && !_image) {
                 Debug.LogError("AnimatedSprite requires either SpriteRenderer or Image component added to the same object!");
             }
         }
