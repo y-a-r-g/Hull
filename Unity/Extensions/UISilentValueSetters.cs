@@ -28,5 +28,14 @@ namespace Hull.Unity.Extensions {
             instance.text = value;
             instance.onValueChanged = originalEvent;
         }
+        
+        private static readonly Dropdown.DropdownEvent EmptyDropdownEvent = new Dropdown.DropdownEvent();
+
+        public static void SetValueSilently(this Dropdown instance, int value) {
+            var originalEvent = instance.onValueChanged;
+            instance.onValueChanged = EmptyDropdownEvent;
+            instance.value = value;
+            instance.onValueChanged = originalEvent;
+        }
     }
 }
