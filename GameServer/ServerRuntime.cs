@@ -55,5 +55,6 @@ namespace Hull.GameServer {
         }
 
         public IEnumerable<IPlayer<TState>> Players { get; private set; }
+        public int ActiveCoroutinesCount { get { return _coroutines.Count; } }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Hull.GameServer.Interfaces;
 using Hull.GameServer.ServerState;
 #if UNITY_5_3_OR_NEWER
@@ -27,10 +28,10 @@ namespace Hull.GameServer {
         private readonly Dictionary<Type, RequestProcessorItem> _requestProcessors =
             new Dictionary<Type, RequestProcessorItem>();
 
-        private readonly Queue<RequestQueueItem<TState>> _requestsQueue =
+        protected readonly Queue<RequestQueueItem<TState>> _requestsQueue =
             new Queue<RequestQueueItem<TState>>();
 
-        private readonly TRuntime _runtime;
+        protected readonly TRuntime _runtime;
         private readonly List<IUpdater<TState, TRuntime>> _updaters = new List<IUpdater<TState, TRuntime>>();
         private TState _state;
 
@@ -87,7 +88,7 @@ namespace Hull.GameServer {
             SendStateChange();
         }
 
-        private void FixedUpdate() {
+        protected void FixedUpdate() {
             State.BeginUpdate();
             while (_requestsQueue.Count > 0) {
                 var item = _requestsQueue.Dequeue();
@@ -106,7 +107,7 @@ namespace Hull.GameServer {
                 }
             }
 #if UNITY_5_3_OR_NEWER
-            var dt = Time.deltaTime;
+            var dt = Thread.CurrentThread.IsThreadPoolThread ? 1 / 30f : Time.deltaTime;
 #endif
             foreach (var updater in _updaters) {
                 updater.Update(State, _runtime, dt);

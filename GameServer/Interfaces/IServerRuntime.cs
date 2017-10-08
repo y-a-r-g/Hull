@@ -22,5 +22,10 @@ namespace Hull.GameServer.Interfaces {
         void UpdateCoroutines();
 
         IEnumerable<IPlayer<TState>> Players { get; }
+        
+        /// <summary>
+        /// Should return amount of currently running coroutines 
+        /// </summary>
+        int ActiveCoroutinesCount { get; }
     }
 }
