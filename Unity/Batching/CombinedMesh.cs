@@ -20,6 +20,10 @@ namespace Hull.Unity.Batching {
         private MeshFilter _meshFilter;
         private readonly HashSet<Batchable> _batchables = new HashSet<Batchable>();
 
+        public int FreeVerticesCapacity {
+            get { return 65000 - _vertices.Count; }
+        }
+
         public void AddBatchable(Batchable batchable) {
             _batchables.Add(batchable);
             _isModified = true;

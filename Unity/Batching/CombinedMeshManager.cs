@@ -4,16 +4,30 @@ using UnityEngine;
 namespace Hull.Unity.Batching {
     [AddComponentMenu("")]
     internal class CombinedMeshManager : MonoBehaviour {
-        private readonly Dictionary<int, CombinedMesh> _combinedMeshes = new Dictionary<int, CombinedMesh>();
+        private readonly Dictionary<int, List<CombinedMesh>> _combinedMeshes = new Dictionary<int, List<CombinedMesh>>();
 
-        public CombinedMesh GetCombinedMesh(GameObject gameObjectWithMesh) {
-            var meshRenderer = gameObjectWithMesh.GetComponent<MeshRenderer>();
+        public CombinedMesh GetCombinedMesh(MeshRenderer meshRenderer, MeshFilter meshFilter) {
+            
             Debug.Assert(meshRenderer);
             var sharedMaterial = meshRenderer.sharedMaterial;
             var materialId = sharedMaterial.GetInstanceID();
 
-            CombinedMesh combinedMesh;
-            if (!_combinedMeshes.TryGetValue(materialId, out combinedMesh)) {
+            List<CombinedMesh> combinedMeshList;
+            if (!_combinedMeshes.TryGetValue(materialId, out combinedMeshList)) {
+                _combinedMeshes[materialId] = combinedMeshList = new List<CombinedMesh>();
+            }
+
+            var vertexCount = meshFilter.sharedMesh.vertexCount;
+            CombinedMesh combinedMesh = null;
+            
+            foreach (var combinedMeshCandidate in combinedMeshList) {
+                if (combinedMeshCandidate.FreeVerticesCapacity >= vertexCount) {
+                    combinedMesh = combinedMeshCandidate;
+                    break;
+                }
+            }
+
+            if (!combinedMesh) {
                 var go = new GameObject(string.Format("Hull.CombinedMesh.{0}", sharedMaterial.name));
                 go.transform.SetParent(transform);
                 var rendererCopy = go.AddComponent<MeshRenderer>();
@@ -23,7 +37,7 @@ namespace Hull.Unity.Batching {
                 rendererCopy.lightProbeUsage = meshRenderer.lightProbeUsage;
                 rendererCopy.reflectionProbeUsage = meshRenderer.reflectionProbeUsage;
                 go.AddComponent<MeshFilter>();
-                _combinedMeshes[materialId] = combinedMesh = go.AddComponent<CombinedMesh>();
+                combinedMeshList.Add(combinedMesh);
             }
 
             return combinedMesh;

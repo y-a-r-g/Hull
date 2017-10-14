@@ -58,7 +58,7 @@ namespace Hull.Unity.Batching {
                 _combinedMeshManager = new GameObject("Hull.CombinedMeshManager").AddComponent<CombinedMeshManager>();
             }
             if (!_combinedMesh) {
-                _combinedMesh = _combinedMeshManager.GetCombinedMesh(gameObject);
+                _combinedMesh = _combinedMeshManager.GetCombinedMesh(gameObject.GetComponent<MeshRenderer>(), gameObject.GetComponent<MeshFilter>());
             }
 
             if (!_addedToCombinedMesh) {
