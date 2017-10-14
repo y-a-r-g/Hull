@@ -29,6 +29,8 @@ namespace Hull.Unity.Batching {
 
             if (!combinedMesh) {
                 var go = new GameObject(string.Format("Hull.CombinedMesh.{0}", sharedMaterial.name));
+                go.AddComponent<MeshFilter>();
+                combinedMesh = go.AddComponent<CombinedMesh>();
                 go.transform.SetParent(transform);
                 var rendererCopy = go.AddComponent<MeshRenderer>();
                 rendererCopy.material = sharedMaterial;
@@ -36,7 +38,6 @@ namespace Hull.Unity.Batching {
                 rendererCopy.motionVectorGenerationMode = meshRenderer.motionVectorGenerationMode;
                 rendererCopy.lightProbeUsage = meshRenderer.lightProbeUsage;
                 rendererCopy.reflectionProbeUsage = meshRenderer.reflectionProbeUsage;
-                go.AddComponent<MeshFilter>();
                 combinedMeshList.Add(combinedMesh);
             }
 
