@@ -1,13 +1,13 @@
 using UnityEngine;
 
 namespace Hull.Unity.Types {
-    public class BSpline {
+    public class BSpline2 {
         private float _lenght;
         private Vector3 _begin;
         private Vector3 _controlPoint;
         private Vector3 _end;
 
-        public BSpline(Vector3 begin, Vector3 controlPoint, Vector3 end) {
+        public BSpline2(Vector3 begin, Vector3 controlPoint, Vector3 end) {
             _begin = begin;
             _controlPoint = controlPoint;
             _end = end;
@@ -102,8 +102,8 @@ namespace Hull.Unity.Types {
             return false;
         }
 
-        public BSpline Reversed {
-            get { return new BSpline(End, ControlPoint, Begin); }
+        public BSpline2 Reversed {
+            get { return new BSpline2(End, ControlPoint, Begin); }
         }
 
         public override bool Equals(object obj) {
@@ -111,7 +111,7 @@ namespace Hull.Unity.Types {
                 return false;
             }
 
-            var other = (BSpline)obj;
+            var other = (BSpline2)obj;
 
             return _begin.Equals(other._begin) &&
                    _controlPoint.Equals(other._controlPoint) &&
