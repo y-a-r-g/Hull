@@ -80,5 +80,9 @@ namespace Hull.Collections {
         public override string ToString() {
             return _value.ToString();
         }
+
+        public static LinearMapId Invalid {
+            get { return new LinearMapId(-1); }
+        }
     }
 }
