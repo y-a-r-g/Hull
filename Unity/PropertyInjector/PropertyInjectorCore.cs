@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization;
 using Hull.Extensions;
 using Hull.Unity.Serialization;
 using UnityEngine;
@@ -74,7 +72,7 @@ namespace Hull.Unity.PropertyInjector {
             private set { _instance = value; }
         }
 
-        private Dictionary<string, OrderedDictionary> _values;
+        private Dictionary<string, List<KeyValuePair<string, string>>> _values;
 
         private void Awake() {
             Instance = this;
@@ -102,15 +100,15 @@ namespace Hull.Unity.PropertyInjector {
             if ((fileName != null) && File.Exists(fileName)) {
                 try {
                     using (var stream = new FileStream(fileName, FileMode.Open)) {
-                        _values = (Dictionary<string, OrderedDictionary>)SerializationUtils.BinaryFormatter
+                        _values = (Dictionary<string, List<KeyValuePair<string, string>>>)SerializationUtils.BinaryFormatter
                             .Deserialize(stream);
                     }
                 }
-                catch (SerializationException) { }
+                catch { }
             }
 
             if (_values == null) {
-                _values = new Dictionary<string, OrderedDictionary>();
+                _values = new Dictionary<string, List<KeyValuePair<string, string>>>();
             }
 
             ReinjectAll();
@@ -121,7 +119,7 @@ namespace Hull.Unity.PropertyInjector {
             var www = new WWW(url);
             yield return www;
 
-            _values = new Dictionary<string, OrderedDictionary>();
+            _values = new Dictionary<string, List<KeyValuePair<string, string>>>();
             var lines = www.text.Split('\n');
             var group = "";
             foreach (var line in lines) {
@@ -137,9 +135,9 @@ namespace Hull.Unity.PropertyInjector {
                     }
                     else {
                         if (!_values.ContainsKey(group)) {
-                            _values[group] = new OrderedDictionary();
+                            _values[group] = new List<KeyValuePair<string, string>>();
                         }
-                        _values[group][key] = value;
+                        _values[group].Add(new KeyValuePair<string, string>(key, value));
                     }
                 }
             }
@@ -176,15 +174,15 @@ namespace Hull.Unity.PropertyInjector {
 
             foreach (var fieldInfoCustomAttribute in fieldInfo.GetCustomAttributes(true)) {
                 var injectedArray = fieldInfoCustomAttribute as InjectedArrayAttribute;
-                OrderedDictionary keys;
+                List<KeyValuePair<string, string>> keys;
                 if (injectedArray != null) {
                     group = injectedArray.Group;
                     if (Instance._values.TryGetValue(group, out keys)) {
                         var elementType = fieldInfo.FieldType.GetElementType();
                         var array = Array.CreateInstance(elementType, keys.Count);
                         var index = 0;
-                        foreach (DictionaryEntry kvp in keys) {
-                            var value = (string)kvp.Value;
+                        foreach (KeyValuePair<string, string> kvp in keys) {
+                            var value = kvp.Value;
                             if (elementType == typeof(int)) {
                                 array.SetValue(int.Parse(value, CultureInfo.InvariantCulture), index);
                             }
@@ -218,22 +216,25 @@ namespace Hull.Unity.PropertyInjector {
                         if (injected.Key != null) {
                             key = injected.Key;
                         }
-                        if (keys.Contains(key)) {
-                            var value = (string)keys[key];
-                            if (fieldInfo.FieldType == typeof(int)) {
-                                fieldInfo.SetValue(component, int.Parse(value));
-                            }
-                            else if (fieldInfo.FieldType == typeof(float)) {
-                                fieldInfo.SetValue(component, float.Parse(value));
-                            }
-                            else if (fieldInfo.FieldType == typeof(string)) {
-                                fieldInfo.SetValue(component, value);
-                            }
-                            else if (fieldInfo.FieldType == typeof(bool)) {
-                                fieldInfo.SetValue(component, value != "false");
-                            }
-                            else {
-                                throw new TypeLoadException();
+
+                        foreach (var keyValuePair in keys) {
+                            if (keyValuePair.Key == key) {
+                                var value = keyValuePair.Value;
+                                if (fieldInfo.FieldType == typeof(int)) {
+                                    fieldInfo.SetValue(component, int.Parse(value));
+                                }
+                                else if (fieldInfo.FieldType == typeof(float)) {
+                                    fieldInfo.SetValue(component, float.Parse(value));
+                                }
+                                else if (fieldInfo.FieldType == typeof(string)) {
+                                    fieldInfo.SetValue(component, value);
+                                }
+                                else if (fieldInfo.FieldType == typeof(bool)) {
+                                    fieldInfo.SetValue(component, value != "false");
+                                }
+                                else {
+                                    throw new TypeLoadException();
+                                }
                             }
                         }
                     }
