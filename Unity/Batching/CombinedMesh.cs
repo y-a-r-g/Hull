@@ -19,18 +19,21 @@ namespace Hull.Unity.Batching {
         private bool _isModified;
         private MeshFilter _meshFilter;
         private readonly HashSet<Batchable> _batchables = new HashSet<Batchable>();
+        private int _freeVerticesCapacity = 65000;
 
         public int FreeVerticesCapacity {
-            get { return 65000 - _vertices.Count; }
+            get { return _freeVerticesCapacity; }
         }
 
         public void AddBatchable(Batchable batchable) {
             _batchables.Add(batchable);
+            _freeVerticesCapacity -= batchable.MeshVertexCount;
             _isModified = true;
         }
 
         public void RemoveBatchable(Batchable batchable) {
             _batchables.Remove(batchable);
+            _freeVerticesCapacity += batchable.MeshVertexCount;
             _isModified = true;
         }
 
