@@ -1,4 +1,6 @@
-﻿using Hull.Unity.Pooling;
+﻿#define CUSTOM_BATCHING
+
+using Hull.Unity.Pooling;
 using UnityEngine;
 
 namespace Hull.Unity.Batching {
@@ -6,19 +8,48 @@ namespace Hull.Unity.Batching {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshRenderer))]
     [AddComponentMenu("Hull/Batchable")]
-    public class Batchable : MonoBehaviour, IPoolable {
+    public class Batchable : MonoBehaviour
+#if CUSTOM_BATCHING
+    , IPoolable
+#endif 
+    {
+        private MeshFilter _meshFilter;
+        internal int MeshVertexCount { get; private set; }
+        public IVertexProcessor VertexProcessor;
+        internal int MeshTrianglesCount { get; private set; }
+
+        public Mesh Mesh {
+            get { return _meshFilter.sharedMesh; }
+        }
+        
+        public void MeshWasUpdated() {
+#if CUSTOM_BATCHING
+            var mesh = Mesh;
+            if (mesh) {
+                if (mesh.vertexCount != MeshVertexCount) {
+                    RemoveFromCombinedMesh();
+                    MeshVertexCount = mesh.vertexCount;
+                    AddToCombinedMesh();
+                }
+                else if (!_addedToCombinedMesh) {
+                    AddToCombinedMesh();
+                }
+                else {
+                    _combinedMesh.UpdateBatchable(this);
+                }
+            }
+#endif 
+        }
+
+#if CUSTOM_BATCHING
         private static CombinedMeshManager _combinedMeshManager;
         private CombinedMesh _combinedMesh;
 
-        public IVertexProcessor VertexProcessor;
 
-        private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private bool _meshRendererWasEnabled;
         private bool _addedToCombinedMesh;
 
-        internal int MeshVertexCount { get; private set; }
-        internal int MeshTrianglesCount { get; private set; }
 
         private void Awake() {
             _meshFilter = GetComponent<MeshFilter>();
@@ -73,24 +104,6 @@ namespace Hull.Unity.Batching {
                 _addedToCombinedMesh = false;
             }
         }
-
-        public void MeshWasUpdated() {
-            var mesh = Mesh;
-            if (mesh.vertexCount != MeshVertexCount) {
-                RemoveFromCombinedMesh();
-                MeshVertexCount = mesh.vertexCount;
-                AddToCombinedMesh();
-            }
-            else if (!_addedToCombinedMesh) {
-                AddToCombinedMesh();
-            }
-            else {
-                _combinedMesh.UpdateBatchable(this);
-            }
-        }
-
-        public Mesh Mesh {
-            get { return _meshFilter.sharedMesh; }
-        }
+#endif
     }
 }
