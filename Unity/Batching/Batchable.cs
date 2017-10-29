@@ -29,6 +29,7 @@ namespace Hull.Unity.Batching {
                 if (mesh.vertexCount != MeshVertexCount) {
                     RemoveFromCombinedMesh();
                     MeshVertexCount = mesh.vertexCount;
+                    MeshTrianglesCount = Mesh.triangles.Length;
                     AddToCombinedMesh();
                 }
                 else if (!_addedToCombinedMesh) {
@@ -60,10 +61,15 @@ namespace Hull.Unity.Batching {
         }
 
         private void Start() {
-            MeshVertexCount = Mesh.vertexCount;
-            MeshTrianglesCount = Mesh.triangles.Length;
-            transform.hasChanged = false;
-            MeshWasUpdated();
+            if (Mesh) {
+                MeshVertexCount = Mesh.vertexCount;
+                MeshTrianglesCount = Mesh.triangles.Length;
+                transform.hasChanged = false;
+                MeshWasUpdated();
+            }
+            else {
+                transform.hasChanged = true;
+            }
         }
 
         private void Update() {
