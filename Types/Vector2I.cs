@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using UnityEngine;
 
 namespace Hull.Types {
     [Serializable]
@@ -54,7 +53,23 @@ namespace Hull.Types {
         }
 
         public Vector2I Clamped {
-            get { return new Vector2I(Math.Max(-1, Mathf.Min(1, X)), Math.Max(-1, Mathf.Min(1, Y))); }
+            get {
+                var cx = X;
+                if (cx < -1) {
+                    cx = -1;
+                }
+                if (cx > 1) {
+                    cx = 1;
+                }
+                var cy = Y;
+                if (cy < -1) {
+                    cy = -1;
+                }
+                if (cy > 1) {
+                    cy = 1;
+                }
+                return new Vector2I(cx, cy);
+            }
         }
 
         public override bool Equals(object other) {
