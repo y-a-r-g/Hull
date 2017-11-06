@@ -208,6 +208,10 @@ namespace Hull.Extensions {
                 list = new List<TItem>();
                 enumerable.ForEach(item => list.Add(item));
             }
+            if (list.Count == 0) {
+                return new TItem[0];
+            }
+            
             return list.ToArray();
         }
 
