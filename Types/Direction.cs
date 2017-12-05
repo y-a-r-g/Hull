@@ -100,7 +100,7 @@ namespace Hull.Types {
             return FromDelta(delta.X, delta.Y);
         }
 
-        private static Direction FromMask(int mask) {
+        public static Direction FromMask(int mask) {
             switch (mask) {
                 case 0x100:
                     return None;
