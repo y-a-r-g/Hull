@@ -702,6 +702,17 @@ namespace Hull.Extensions {
             return true;
         }
         #endregion
+
+        /// <summary>
+        /// Returns true if at least one element of the enumerable is fount in another enumerable
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="otehr"></param>
+        /// <typeparam name="TItem"></typeparam>
+        /// <returns></returns>
+        public static bool Intersects<TItem>(this IEnumerable<TItem> enumerable, IEnumerable<TItem> otehr) {
+            return enumerable.Any(otehr.Contains);
+        }
     }
 }
 // ReSharper restore PossibleMultipleEnumeration
